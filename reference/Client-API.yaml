@@ -2617,7 +2617,7 @@ paths:
         in: path
         required: true
     post:
-      summary: ''
+      summary: Pull Remote File
       operationId: post-servers-server-files-pull
       responses:
         '200':
@@ -2644,12 +2644,17 @@ paths:
                 foreground:
                   type: boolean
                   description: Whether to download in the foreground.
+              required:
+                - url
             examples:
               Example 1:
                 value:
                   url: 'https://i.mrxbox98.me/file/2022/12/chrome_pPEkxTDC9L.png'
                   directory: images/
                   filename: blank.png
+        description: Contains information about the file to download and where to store it.
+      tags:
+        - Server Files
 components:
   schemas:
     allocation:
