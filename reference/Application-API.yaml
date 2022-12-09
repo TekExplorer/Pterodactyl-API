@@ -1,0 +1,27 @@
+openapi: 3.1.0
+info:
+  title: Application API - WIP
+  version: '1.0'
+  description: |
+    The Application API (/api/application/)
+
+    Note: Client Keys can not be used here. Only Application API Tokens will work.
+
+    WIP
+  license:
+    name: The MIT License (MIT)
+    url: 'https://github.com/pterodactyl/panel/blob/develop/LICENSE.md'
+  contact:
+    name: AreYouScared#001
+servers:
+  - url: 'https://pterodactyl.test/api/application'
+    description: Application API
+paths: {}
+components:
+  schemas: {}
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []

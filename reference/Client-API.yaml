@@ -1,0 +1,3539 @@
+openapi: 3.1.0
+info:
+  title: Client API
+  version: '1.0'
+  description: Provides access to servers and general account related management endpoints.
+  license:
+    name: The MIT License (MIT)
+    url: 'https://github.com/pterodactyl/panel/blob/develop/LICENSE.md'
+  contact:
+    name: Dane Everitt
+    url: 'https://pterodactyl.io'
+    email: dane@pterodactyl.io
+  summary: Client API
+servers:
+  - url: 'https://pterodactyl.test/api/client'
+    description: Client API
+paths:
+  /:
+    get:
+      summary: Get Servers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: list
+                    data:
+                      - object: server
+                        attributes:
+                          server_owner: true
+                          identifier: 2bc172e4
+                          internal_id: 1
+                          uuid: 2bc172e4-6a09-4dc2-b832-2c859593290f
+                          name: Java 8
+                          node: Wings
+                          sftp_details:
+                            ip: wings.pterodactyl.app
+                            port: 2022
+                          description: ''
+                          limits:
+                            memory: 1024
+                            swap: 0
+                            disk: 1024
+                            io: 500
+                            cpu: 0
+                            threads: null
+                            oom_disabled: true
+                          invocation: java -Xms128M -Xmx1024M -Dterminal.jline=false -Dterminal.ansi=true -jar server.jar
+                          docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                          egg_features:
+                            - eula
+                            - java_version
+                            - pid_limit
+                          feature_limits:
+                            databases: 0
+                            allocations: 0
+                            backups: 0
+                          status: null
+                          is_suspended: false
+                          is_installing: false
+                          is_transferring: false
+                          relationships:
+                            allocations:
+                              object: list
+                              data:
+                                - object: allocation
+                                  attributes:
+                                    id: 41
+                                    ip: 0.0.0.0
+                                    ip_alias: null
+                                    port: 1234
+                                    notes: null
+                                    is_default: true
+                            variables:
+                              object: list
+                              data:
+                                - object: egg_variable
+                                  attributes:
+                                    name: Minecraft Version
+                                    description: "The version of minecraft to download. \r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+                                    env_variable: MINECRAFT_VERSION
+                                    default_value: latest
+                                    server_value: 1.8.8
+                                    is_editable: true
+                                    rules: 'nullable|string|max:20'
+                                - object: egg_variable
+                                  attributes:
+                                    name: Server Jar File
+                                    description: The name of the server jarfile to run the server with.
+                                    env_variable: SERVER_JARFILE
+                                    default_value: server.jar
+                                    server_value: server.jar
+                                    is_editable: true
+                                    rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                                - object: egg_variable
+                                  attributes:
+                                    name: Build Number
+                                    description: "The build number for the paper release.\r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+                                    env_variable: BUILD_NUMBER
+                                    default_value: latest
+                                    server_value: latest
+                                    is_editable: true
+                                    rules: 'required|string|max:20'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 50
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                        attributes:
+                          $ref: '#/components/schemas/server'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/pagination'
+              examples:
+                Example:
+                  value:
+                    object: list
+                    data:
+                      - object: server
+                        attributes:
+                          server_owner: true
+                          identifier: 2bc172e4
+                          internal_id: 1
+                          uuid: 2bc172e4-6a09-4dc2-b832-2c859593290f
+                          name: Java 8
+                          node: Wings
+                          sftp_details:
+                            ip: 127.0.0.1
+                            port: 2022
+                          description: ''
+                          limits:
+                            memory: 1024
+                            swap: 0
+                            disk: 1024
+                            io: 500
+                            cpu: 0
+                            threads: null
+                            oom_disabled: true
+                          invocation: java -Xms128M -Xmx1024M -Dterminal.jline=false -Dterminal.ansi=true -jar server.jar
+                          docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                          egg_features:
+                            - eula
+                            - java_version
+                            - pid_limit
+                          feature_limits:
+                            databases: 0
+                            allocations: 0
+                            backups: 0
+                          status: null
+                          is_suspended: false
+                          is_installing: false
+                          is_transferring: false
+                          relationships:
+                            allocations:
+                              object: list
+                              data:
+                                - object: allocation
+                                  attributes:
+                                    id: 41
+                                    ip: 0.0.0.0
+                                    ip_alias: null
+                                    port: 1234
+                                    notes: null
+                                    is_default: true
+                            variables:
+                              object: list
+                              data:
+                                - object: egg_variable
+                                  attributes:
+                                    name: Minecraft Version
+                                    description: "The version of minecraft to download. \r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+                                    env_variable: MINECRAFT_VERSION
+                                    default_value: latest
+                                    server_value: 1.8.8
+                                    is_editable: true
+                                    rules: 'nullable|string|max:20'
+                                - object: egg_variable
+                                  attributes:
+                                    name: Server Jar File
+                                    description: The name of the server jarfile to run the server with.
+                                    env_variable: SERVER_JARFILE
+                                    default_value: server.jar
+                                    server_value: server.jar
+                                    is_editable: true
+                                    rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                                - object: egg_variable
+                                  attributes:
+                                    name: Build Number
+                                    description: "The build number for the paper release.\r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+                                    env_variable: BUILD_NUMBER
+                                    default_value: latest
+                                    server_value: latest
+                                    is_editable: true
+                                    rules: 'required|string|max:20'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 50
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '405':
+          $ref: '#/components/responses/405'
+      operationId: get-servers
+      description: Returns a list of all servers the owner of the API key has access to.
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - admin
+              - owner
+              - admin-all
+          in: query
+          name: type
+          description: Determines which servers to return. If not specified all servers you have access to as an owner or subuser are returned.
+          style: form
+        - $ref: '#/components/parameters/include'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - schema:
+            type: string
+            uniqueItems: true
+            example: 'filter[*]=playthrough'
+          in: query
+          name: 'filter[*]'
+          style: form
+          description: Allows filtering of the results before they are returned.
+        - schema:
+            type: string
+            uniqueItems: true
+            example: 'filter[name]=minecraft'
+          in: query
+          name: 'filter[name]'
+          style: form
+          description: Allows filtering of the results before they are returned.
+        - schema:
+            type: string
+            uniqueItems: true
+            example: 'filter[uuid]=4d3e1401'
+          in: query
+          name: 'filter[uuid]'
+          style: form
+          description: Allows filtering of the results before they are returned.
+    parameters: []
+  /permissions:
+    get:
+      summary: List Available Permissions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                  attributes:
+                    type: object
+                    properties:
+                      permissions:
+                        type: object
+                        properties:
+                          websocket:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  connect:
+                                    type: string
+                          control:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  console:
+                                    type: string
+                                  start:
+                                    type: string
+                                  stop:
+                                    type: string
+                                  restart:
+                                    type: string
+                          user:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  create:
+                                    type: string
+                                  read:
+                                    type: string
+                                  update:
+                                    type: string
+                                  delete:
+                                    type: string
+                          file:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  create:
+                                    type: string
+                                  read:
+                                    type: string
+                                  read-content:
+                                    type: string
+                                  update:
+                                    type: string
+                                  delete:
+                                    type: string
+                                  archive:
+                                    type: string
+                                  sftp:
+                                    type: string
+                          backup:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  create:
+                                    type: string
+                                  read:
+                                    type: string
+                                  delete:
+                                    type: string
+                                  download:
+                                    type: string
+                                  restore:
+                                    type: string
+                          allocation:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  read:
+                                    type: string
+                                  create:
+                                    type: string
+                                  update:
+                                    type: string
+                                  delete:
+                                    type: string
+                          startup:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  read:
+                                    type: string
+                                  update:
+                                    type: string
+                                  docker-image:
+                                    type: string
+                          database:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  create:
+                                    type: string
+                                  read:
+                                    type: string
+                                  update:
+                                    type: string
+                                  delete:
+                                    type: string
+                                  view_password:
+                                    type: string
+                          schedule:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  create:
+                                    type: string
+                                  read:
+                                    type: string
+                                  update:
+                                    type: string
+                                  delete:
+                                    type: string
+                          settings:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  rename:
+                                    type: string
+                                  reinstall:
+                                    type: string
+                          activity:
+                            type: object
+                            properties:
+                              description:
+                                type: string
+                              keys:
+                                type: object
+                                properties:
+                                  read:
+                                    type: string
+                x-examples:
+                  example-1:
+                    object: system_permissions
+                    attributes:
+                      permissions:
+                        websocket:
+                          description: 'Allows the user to connect to the server websocket, giving them access to view console output and realtime server stats.'
+                          keys:
+                            connect: Allows a user to connect to the websocket instance for a server to stream the console.
+                        control:
+                          description: 'Permissions that control a user''s ability to control the power state of a server, or send commands.'
+                          keys:
+                            console: Allows a user to send commands to the server instance via the console.
+                            start: Allows a user to start the server if it is stopped.
+                            stop: Allows a user to stop a server if it is running.
+                            restart: 'Allows a user to perform a server restart. This allows them to start the server if it is offline, but not put the server in a completely stopped state.'
+                        user:
+                          description: 'Permissions that allow a user to manage other subusers on a server. They will never be able to edit their own account, or assign permissions they do not have themselves.'
+                          keys:
+                            create: Allows a user to create new subusers for the server.
+                            read: Allows the user to view subusers and their permissions for the server.
+                            update: Allows a user to modify other subusers.
+                            delete: Allows a user to delete a subuser from the server.
+                        file:
+                          description: Permissions that control a user's ability to modify the filesystem for this server.
+                          keys:
+                            create: Allows a user to create additional files and folders via the Panel or direct upload.
+                            read: 'Allows a user to view the contents of a directory, but not view the contents of or download files.'
+                            read-content: Allows a user to view the contents of a given file. This will also allow the user to download files.
+                            update: Allows a user to update the contents of an existing file or directory.
+                            delete: Allows a user to delete files or directories.
+                            archive: Allows a user to archive the contents of a directory as well as decompress existing archives on the system.
+                            sftp: Allows a user to connect to SFTP and manage server files using the other assigned file permissions.
+                        backup:
+                          description: Permissions that control a user's ability to generate and manage server backups.
+                          keys:
+                            create: Allows a user to create new backups for this server.
+                            read: Allows a user to view all backups that exist for this server.
+                            delete: Allows a user to remove backups from the system.
+                            download: 'Allows a user to download a backup for the server. Danger: this allows a user to access all files for the server in the backup.'
+                            restore: 'Allows a user to restore a backup for the server. Danger: this allows the user to delete all of the server files in the process.'
+                        allocation:
+                          description: Permissions that control a user's ability to modify the port allocations for this server.
+                          keys:
+                            read: Allows a user to view all allocations currently assigned to this server. Users with any level of access to this server can always view the primary allocation.
+                            create: Allows a user to assign additional allocations to the server.
+                            update: Allows a user to change the primary server allocation and attach notes to each allocation.
+                            delete: Allows a user to delete an allocation from the server.
+                        startup:
+                          description: Permissions that control a user's ability to view this server's startup parameters.
+                          keys:
+                            read: Allows a user to view the startup variables for a server.
+                            update: Allows a user to modify the startup variables for the server.
+                            docker-image: Allows a user to modify the Docker image used when running the server.
+                        database:
+                          description: Permissions that control a user's access to the database management for this server.
+                          keys:
+                            create: Allows a user to create a new database for this server.
+                            read: Allows a user to view the database associated with this server.
+                            update: Allows a user to rotate the password on a database instance. If the user does not have the view_password permission they will not see the updated password.
+                            delete: Allows a user to remove a database instance from this server.
+                            view_password: Allows a user to view the password associated with a database instance for this server.
+                        schedule:
+                          description: Permissions that control a user's access to the schedule management for this server.
+                          keys:
+                            create: Allows a user to create new schedules for this server.
+                            read: Allows a user to view schedules and the tasks associated with them for this server.
+                            update: Allows a user to update schedules and schedule tasks for this server.
+                            delete: Allows a user to delete schedules for this server.
+                        settings:
+                          description: Permissions that control a user's access to the settings for this server.
+                          keys:
+                            rename: Allows a user to rename this server.
+                            reinstall: Allows a user to trigger a reinstall of this server.
+                        activity:
+                          description: Permissions that control a user's access to the server activity logs.
+                          keys:
+                            read: Allows a user to view the activity logs for the server.
+              examples:
+                example:
+                  value:
+                    object: system_permissions
+                    attributes:
+                      permissions:
+                        websocket:
+                          description: 'Allows the user to connect to the server websocket, giving them access to view console output and realtime server stats.'
+                          keys:
+                            connect: Allows a user to connect to the websocket instance for a server to stream the console.
+                        control:
+                          description: 'Permissions that control a user''s ability to control the power state of a server, or send commands.'
+                          keys:
+                            console: Allows a user to send commands to the server instance via the console.
+                            start: Allows a user to start the server if it is stopped.
+                            stop: Allows a user to stop a server if it is running.
+                            restart: 'Allows a user to perform a server restart. This allows them to start the server if it is offline, but not put the server in a completely stopped state.'
+                        user:
+                          description: 'Permissions that allow a user to manage other subusers on a server. They will never be able to edit their own account, or assign permissions they do not have themselves.'
+                          keys:
+                            create: Allows a user to create new subusers for the server.
+                            read: Allows the user to view subusers and their permissions for the server.
+                            update: Allows a user to modify other subusers.
+                            delete: Allows a user to delete a subuser from the server.
+                        file:
+                          description: Permissions that control a user's ability to modify the filesystem for this server.
+                          keys:
+                            create: Allows a user to create additional files and folders via the Panel or direct upload.
+                            read: 'Allows a user to view the contents of a directory, but not view the contents of or download files.'
+                            read-content: Allows a user to view the contents of a given file. This will also allow the user to download files.
+                            update: Allows a user to update the contents of an existing file or directory.
+                            delete: Allows a user to delete files or directories.
+                            archive: Allows a user to archive the contents of a directory as well as decompress existing archives on the system.
+                            sftp: Allows a user to connect to SFTP and manage server files using the other assigned file permissions.
+                        backup:
+                          description: Permissions that control a user's ability to generate and manage server backups.
+                          keys:
+                            create: Allows a user to create new backups for this server.
+                            read: Allows a user to view all backups that exist for this server.
+                            delete: Allows a user to remove backups from the system.
+                            download: 'Allows a user to download a backup for the server. Danger: this allows a user to access all files for the server in the backup.'
+                            restore: 'Allows a user to restore a backup for the server. Danger: this allows the user to delete all of the server files in the process.'
+                        allocation:
+                          description: Permissions that control a user's ability to modify the port allocations for this server.
+                          keys:
+                            read: Allows a user to view all allocations currently assigned to this server. Users with any level of access to this server can always view the primary allocation.
+                            create: Allows a user to assign additional allocations to the server.
+                            update: Allows a user to change the primary server allocation and attach notes to each allocation.
+                            delete: Allows a user to delete an allocation from the server.
+                        startup:
+                          description: Permissions that control a user's ability to view this server's startup parameters.
+                          keys:
+                            read: Allows a user to view the startup variables for a server.
+                            update: Allows a user to modify the startup variables for the server.
+                            docker-image: Allows a user to modify the Docker image used when running the server.
+                        database:
+                          description: Permissions that control a user's access to the database management for this server.
+                          keys:
+                            create: Allows a user to create a new database for this server.
+                            read: Allows a user to view the database associated with this server.
+                            update: Allows a user to rotate the password on a database instance. If the user does not have the view_password permission they will not see the updated password.
+                            delete: Allows a user to remove a database instance from this server.
+                            view_password: Allows a user to view the password associated with a database instance for this server.
+                        schedule:
+                          description: Permissions that control a user's access to the schedule management for this server.
+                          keys:
+                            create: Allows a user to create new schedules for this server.
+                            read: Allows a user to view schedules and the tasks associated with them for this server.
+                            update: Allows a user to update schedules and schedule tasks for this server.
+                            delete: Allows a user to delete schedules for this server.
+                        settings:
+                          description: Permissions that control a user's access to the settings for this server.
+                          keys:
+                            rename: Allows a user to rename this server.
+                            reinstall: Allows a user to trigger a reinstall of this server.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '405':
+          $ref: '#/components/responses/405'
+      operationId: get-permissions
+      description: Returns all of the permissions available on the Panel instance.
+      x-internal: false
+  /account:
+    get:
+      summary: Get Account Details
+      operationId: get-account
+      description: Retrieves information about the account the API key is associated with.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  object:
+                    type: string
+                  attributes:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      admin:
+                        type: boolean
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      language:
+                        type: string
+                    required:
+                      - id
+                      - admin
+                      - username
+                      - email
+                      - first_name
+                      - last_name
+                      - language
+                required:
+                  - object
+                  - attributes
+                x-examples:
+                  example-1:
+                    object: user
+                    attributes:
+                      id: 1
+                      admin: true
+                      username: Pterodactyl
+                      email: Pterodactyl@pterodactyl.io
+                      first_name: Perry
+                      last_name: Dactyl
+                      language: en
+              examples:
+                example:
+                  value:
+                    object: user
+                    attributes:
+                      id: 1
+                      admin: true
+                      username: Pterodactyl
+                      email: Pterodactyl@pterodactyl.io
+                      first_name: Perry
+                      last_name: Dactyl
+                      language: en
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '405':
+          $ref: '#/components/responses/405'
+      tags:
+        - Account
+  /account/two-factor:
+    get:
+      summary: Setup 2FA
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      image_url_data: 'otpauth://totp/Pterodactyl:Pterodactyl%40pterodactyl.io?secret=XSDXOMGVUSBX3NP63ITOXJGCIGYFN123&issuer=Pterodactyl'
+                      secret: XSDXOMGVUSBX3NP63ITOXJGCIGYFN123
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      image_url_data:
+                        type: string
+                      secret:
+                        type: string
+              examples:
+                example:
+                  value:
+                    data:
+                      image_url_data: 'otpauth://totp/Pterodactyl:Pterodactyl%40pterodactyl.io?secret=XSDXOMGVUSBX3NP63ITOXJGCIGYFN123&issuer=Pterodactyl'
+                      secret: XSDXOMGVUSBX3NP63ITOXJGCIGYFN123
+      operationId: get-account-two-factor
+      description: 'Generates a new secret code and associated TOTP data. This can then be used to generate a QR code for the user to scan with their device. Subsequent requests to this endpoint will trigger the secret to be rotated, thus invalidating previous tokens.'
+      tags:
+        - Account
+    post:
+      summary: Enable 2FA
+      operationId: post-account-two-factor
+      responses:
+        '200':
+          description: The response body will contain an array of recovery codes that the user can use if they lose their device.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: string
+                    attributes:
+                      tokens:
+                        - R10h0FaLEK
+                        - A9JK6TUNuo
+                        - L8LPYf31bp
+                        - P746oBtio6
+                        - v6KHiL1WAu
+                        - t5vpwR5HiU
+                        - 64HwEIsBCb
+                        - p3LHWycn8r
+                        - e2LPKB37ss
+                        - d1UmNeHetb
+                properties:
+                  object:
+                    type: string
+                  attributes:
+                    type: object
+                    properties:
+                      tokens:
+                        type: array
+                        items:
+                          type: string
+              examples:
+                example:
+                  value:
+                    object: string
+                    attributes:
+                      tokens:
+                        - R10h0FaLEK
+                        - A9JK6TUNuo
+                        - L8LPYf31bp
+                        - P746oBtio6
+                        - v6KHiL1WAu
+                        - t5vpwR5HiU
+                        - 64HwEIsBCb
+                        - p3LHWycn8r
+                        - e2LPKB37ss
+                        - d1UmNeHetb
+      description: Enable 2FA on an account using the code generated by the `GET` version of this endpoint.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  code: '505134'
+              properties:
+                code:
+                  type: string
+                password:
+                  type: string
+              required:
+                - code
+                - password
+            examples:
+              example:
+                value:
+                  code: '505134'
+                  password: my password
+        description: The request body must include only the 6-digit code generated by the user's 2FA application. It must also include the user's current password.
+      tags:
+        - Account
+    delete:
+      summary: Disable 2FA
+      operationId: delete-account-two-factor
+      responses:
+        '204':
+          description: No Content
+      description: Disables 2FA on a user's account if it has already been enabled.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+              x-examples:
+                example-1:
+                  password: MySuperAwesomePassword!123
+            examples:
+              example:
+                value:
+                  password: MySuperAwesomePassword!123
+        description: ''
+      tags:
+        - Account
+  /account/email:
+    put:
+      summary: Change Email
+      operationId: put-email
+      responses:
+        '204':
+          description: No Content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  email: example@xample.com
+                  password: Password
+              properties:
+                email:
+                  type: string
+                  description: The new email address to use for this account.
+                password:
+                  type: string
+                  description: The current account password.
+              required:
+                - email
+                - password
+            examples:
+              example:
+                value:
+                  email: perry@pterodactyl.io
+                  password: MySuperAwesomePassword!123
+      description: Updates the email address for the current account.
+      tags:
+        - Account
+    parameters: []
+  /account/password:
+    put:
+      summary: Change Password
+      operationId: put-password
+      responses:
+        '204':
+          description: No Content
+      description: Updates the password for the current account and signs out all other active sessions.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+              required:
+                - current_password
+                - password
+                - password_confirmation
+              x-examples:
+                example-1:
+                  current_password: Password
+                  password: password
+                  password_confirmation: password
+            examples:
+              example:
+                value:
+                  current_password: MySuperAwesomePassword!123
+                  password: MyNEWSuperAwesomePassword!1234
+                  password_confirmation: MyNEWSuperAwesomePassword!1234
+      tags:
+        - Account
+    parameters: []
+  /account/api-keys:
+    get:
+      summary: Get API Keys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: list
+                    data:
+                      - object: api_key
+                        attributes:
+                          identifier: DkXVQLiLMVb1V7lA
+                          description: API Test
+                          allowed_ips: []
+                          last_used_at: null
+                          created_at: '2022-02-13T17:58:48-05:00'
+                      - object: api_key
+                        attributes:
+                          identifier: ITZK7NWMhjPImCWG
+                          description: Test API key with Allowed IPS
+                          allowed_ips:
+                            - 127.0.0.1
+                            - 192.168.1.5
+                            - 45.36.21.65
+                          last_used_at: '2022-03-01T01:41:51-05:00'
+                          created_at: '2022-03-12T15:22:23-05:00'
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - api_key
+                        attributes:
+                          $ref: '#/components/schemas/api-key'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: api_key
+                        attributes:
+                          identifier: DkXVQLiLMVb1V7lA
+                          description: API Test
+                          allowed_ips: []
+                          last_used_at: null
+                          created_at: '2022-02-13T17:58:48-05:00'
+                      - object: api_key
+                        attributes:
+                          identifier: ITZK7NWMhjPImCWG
+                          description: Test API key with Allowed IPS
+                          allowed_ips:
+                            - 127.0.0.1
+                            - 192.168.1.5
+                            - 45.36.21.65
+                          last_used_at: '2022-03-01T01:41:51-05:00'
+                          created_at: '2022-03-12T15:22:23-05:00'
+      operationId: get-account-api-keys
+      description: Returns a list of all active API keys for an account
+      tags:
+        - Account
+    parameters: []
+    post:
+      summary: Create API Key
+      operationId: post-account-api-keys
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - api_key
+                  attributes:
+                    $ref: '#/components/schemas/api-key'
+                  meta:
+                    type: object
+                    properties:
+                      secret_token:
+                        type: string
+                        description: The secret part of the API key. This should be concatenated with the `identifer` returned in the `attributes` object.
+              examples:
+                example-1:
+                  value: {}
+      description: Creates a new API key for an account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  description: Restricted IPs
+                  allowed_ips:
+                    - 127.0.0.1
+                    - 192.168.50.1
+              properties:
+                description:
+                  type: string
+                  description: |
+                    A short description of the API key.
+                  maxLength: 500
+                  minLength: 0
+                allowed_ips:
+                  type: array
+                  maxItems: 50
+                  minItems: 0
+                  uniqueItems: true
+                  description: The `allowed_ips` field can include up to 50 IP addresses that are allowed to make use of the generated API key. IPs can be written in CIDR notation to support larger ranges.
+                  items:
+                    type: string
+                    example: 192.168.1.100/29
+            examples:
+              example:
+                value:
+                  description: Restricted IPs
+                  allowed_ips:
+                    - 127.0.0.1
+                    - 192.168.50.1
+        description: ''
+      tags:
+        - Account
+  '/account/api-keys/{identifier}':
+    parameters:
+      - $ref: '#/components/parameters/api-key'
+    delete:
+      summary: Delete API Key
+      operationId: delete-account-api-keys-identifier
+      responses:
+        '204':
+          description: No Content
+      description: Deletes an API key.
+      tags:
+        - Account
+  /account/ssh-keys:
+    get:
+      summary: Get SSH Keys
+      operationId: get-account-ssh-keys
+      description: Returns a list of your ssh keys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    object: list
+                    data:
+                      - object: ssh_key
+                        attributes:
+                          name: ''
+                          fingerprint: ''
+                          public_key: ''
+                          created_at: ''
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - ssh_key
+                        attributes:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            fingerprint:
+                              type: string
+                            public_key:
+                              type: string
+                            created_at:
+                              type: string
+                              format: date-time
+              examples:
+                example-1:
+                  value:
+                    object: list
+                    data:
+                      - object: ssh_key
+                        attributes:
+                          name: my key
+                          fingerprint: '---'
+                          public_key: '---'
+                          created_at: '2019-08-24T14:15:22Z'
+      tags:
+        - Account
+    post:
+      summary: Create SSH Key
+      operationId: post-account-ssh-keys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    object: ssh_key
+                    attributes:
+                      name: my key
+                      fingerprint: '---'
+                      public_key: '---'
+                      created_at: '2019-08-24T14:15:22Z'
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - ssh_key
+                  attributes:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      fingerprint:
+                        type: string
+                      public_key:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+              examples:
+                example-1:
+                  value:
+                    object: ssh_key
+                    attributes:
+                      name: my key
+                      fingerprint: '---'
+                      public_key: '---'
+                      created_at: '2019-08-24T14:15:22Z'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  name: ''
+                  public_key: ''
+              properties:
+                name:
+                  type: string
+                public_key:
+                  type: string
+              required:
+                - name
+                - public_key
+        description: The public key **must** be for a 2048+ bit `RSA` key or an `ECDSA` key. `DSA` keys and `RSA` keys less than 2048 bits are not supported.
+      tags:
+        - Account
+      description: Adds an SSH key to the user's account.
+  /account/ssh-keys/remove:
+    parameters: []
+    post:
+      summary: Remove SSH Key
+      operationId: post-account-ssh-keys-remove
+      responses:
+        '204':
+          description: No Content
+      description: Removes an SSH key from a user's account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fingerprint:
+                  type: string
+                  description: The fingerprint of the SSH key to be removed.
+              required:
+                - fingerprint
+      tags:
+        - Account
+  '/servers/{server}':
+    get:
+      summary: Get Server Details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: server
+                    attributes:
+                      server_owner: false
+                      identifier: 4b43467c
+                      internal_id: 60
+                      uuid: 4b43467c-6d78-411c-8018-3f2a75ccf6b3
+                      name: Vanilla minecraft
+                      node: Node 4
+                      sftp_details:
+                        ip: local.wings
+                        port: 2022
+                      description: ''
+                      limits:
+                        memory: 4096
+                        swap: 0
+                        disk: 12700
+                        io: 500
+                        cpu: 0
+                        threads: null
+                        oom_disabled: true
+                      invocation: java -Xms128M -Xmx4096M -jar server.jar
+                      docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                      egg_features:
+                        - eula
+                        - java_version
+                        - pid_limit
+                      feature_limits:
+                        databases: 0
+                        allocations: 0
+                        backups: 2
+                      status: null
+                      is_suspended: false
+                      is_installing: false
+                      is_transferring: false
+                      relationships:
+                        allocations:
+                          object: list
+                          data:
+                            - object: allocation
+                              attributes:
+                                id: 23
+                                ip: 127.0.0.1
+                                ip_alias: null
+                                port: 25668
+                                notes: null
+                                is_default: true
+                        variables:
+                          object: list
+                          data:
+                            - object: egg_variable
+                              attributes:
+                                name: Server Jar File
+                                description: The name of the server jarfile to run the server with.
+                                env_variable: SERVER_JARFILE
+                                default_value: server.jar
+                                server_value: server.jar
+                                is_editable: true
+                                rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                            - object: egg_variable
+                              attributes:
+                                name: Server Version
+                                description: 'The version of Minecraft Vanilla to install. Use "latest" to install the latest version, or use "snapshot" to install the latest snapshot. Go to Settings > Reinstall Server to apply.'
+                                env_variable: VANILLA_VERSION
+                                default_value: latest
+                                server_value: latest
+                                is_editable: true
+                                rules: 'required|string|between:3,15'
+                    meta:
+                      is_server_owner: false
+                      user_permissions:
+                        - '*'
+                        - admin.websocket.errors
+                        - admin.websocket.install
+                        - admin.websocket.transfer
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - server
+                  attributes:
+                    $ref: '#/components/schemas/server'
+                  meta:
+                    type: object
+                    properties:
+                      is_server_owner:
+                        type: boolean
+                        description: If the user making the API request is the owner of the server this value will be `true` — in all other cases it is `false`.
+                      user_permissions:
+                        type: array
+                        items:
+                          type: string
+              examples:
+                example:
+                  value:
+                    object: server
+                    attributes:
+                      server_owner: false
+                      identifier: 4b43467c
+                      internal_id: 60
+                      uuid: 4b43467c-6d78-411c-8018-3f2a75ccf6b3
+                      name: Vanilla minecraft
+                      node: Node 4
+                      sftp_details:
+                        ip: local.wings
+                        port: 2022
+                      description: ''
+                      limits:
+                        memory: 4096
+                        swap: 0
+                        disk: 12700
+                        io: 500
+                        cpu: 0
+                        threads: null
+                        oom_disabled: true
+                      invocation: java -Xms128M -Xmx4096M -jar server.jar
+                      docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                      egg_features:
+                        - eula
+                        - java_version
+                        - pid_limit
+                      feature_limits:
+                        databases: 0
+                        allocations: 0
+                        backups: 2
+                      status: null
+                      is_suspended: false
+                      is_installing: false
+                      is_transferring: false
+                      relationships:
+                        allocations:
+                          object: list
+                          data:
+                            - object: allocation
+                              attributes:
+                                id: 23
+                                ip: 127.0.0.1
+                                ip_alias: null
+                                port: 25668
+                                notes: null
+                                is_default: true
+                        variables:
+                          object: list
+                          data:
+                            - object: egg_variable
+                              attributes:
+                                name: Server Jar File
+                                description: The name of the server jarfile to run the server with.
+                                env_variable: SERVER_JARFILE
+                                default_value: server.jar
+                                server_value: server.jar
+                                is_editable: true
+                                rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                            - object: egg_variable
+                              attributes:
+                                name: Server Version
+                                description: 'The version of Minecraft Vanilla to install. Use "latest" to install the latest version, or use "snapshot" to install the latest snapshot. Go to Settings > Reinstall Server to apply.'
+                                env_variable: VANILLA_VERSION
+                                default_value: latest
+                                server_value: latest
+                                is_editable: true
+                                rules: 'required|string|between:3,15'
+                    meta:
+                      is_server_owner: false
+                      user_permissions:
+                        - '*'
+                        - admin.websocket.errors
+                        - admin.websocket.install
+                        - admin.websocket.transfer
+      operationId: get-server-details
+      description: Returns details about a specific server.
+      parameters:
+        - $ref: '#/components/parameters/include'
+      tags:
+        - Server
+    parameters:
+      - $ref: '#/components/parameters/server'
+  '/servers/{server}/websocket':
+    get:
+      summary: Get Server Websocket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: server
+                    attributes:
+                      server_owner: false
+                      identifier: 4b43467c
+                      internal_id: 60
+                      uuid: 4b43467c-6d78-411c-8018-3f2a75ccf6b3
+                      name: Vanilla minecraft
+                      node: Node 4
+                      sftp_details:
+                        ip: local.wings
+                        port: 2022
+                      description: ''
+                      limits:
+                        memory: 4096
+                        swap: 0
+                        disk: 12700
+                        io: 500
+                        cpu: 0
+                        threads: null
+                        oom_disabled: true
+                      invocation: java -Xms128M -Xmx4096M -jar server.jar
+                      docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                      egg_features:
+                        - eula
+                        - java_version
+                        - pid_limit
+                      feature_limits:
+                        databases: 0
+                        allocations: 0
+                        backups: 2
+                      status: null
+                      is_suspended: false
+                      is_installing: false
+                      is_transferring: false
+                      relationships:
+                        allocations:
+                          object: list
+                          data:
+                            - object: allocation
+                              attributes:
+                                id: 23
+                                ip: 127.0.0.1
+                                ip_alias: null
+                                port: 25668
+                                notes: null
+                                is_default: true
+                        variables:
+                          object: list
+                          data:
+                            - object: egg_variable
+                              attributes:
+                                name: Server Jar File
+                                description: The name of the server jarfile to run the server with.
+                                env_variable: SERVER_JARFILE
+                                default_value: server.jar
+                                server_value: server.jar
+                                is_editable: true
+                                rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                            - object: egg_variable
+                              attributes:
+                                name: Server Version
+                                description: 'The version of Minecraft Vanilla to install. Use "latest" to install the latest version, or use "snapshot" to install the latest snapshot. Go to Settings > Reinstall Server to apply.'
+                                env_variable: VANILLA_VERSION
+                                default_value: latest
+                                server_value: latest
+                                is_editable: true
+                                rules: 'required|string|between:3,15'
+                    meta:
+                      is_server_owner: false
+                      user_permissions:
+                        - '*'
+                        - admin.websocket.errors
+                        - admin.websocket.install
+                        - admin.websocket.transfer
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The authentication token to use once connected to the websocket.
+                      socket:
+                        type: string
+                        description: The URL to connect to with a websocket client.
+              examples:
+                example:
+                  value:
+                    object: server
+                    attributes:
+                      server_owner: false
+                      identifier: 4b43467c
+                      internal_id: 60
+                      uuid: 4b43467c-6d78-411c-8018-3f2a75ccf6b3
+                      name: Vanilla minecraft
+                      node: Node 4
+                      sftp_details:
+                        ip: local.wings
+                        port: 2022
+                      description: ''
+                      limits:
+                        memory: 4096
+                        swap: 0
+                        disk: 12700
+                        io: 500
+                        cpu: 0
+                        threads: null
+                        oom_disabled: true
+                      invocation: java -Xms128M -Xmx4096M -jar server.jar
+                      docker_image: 'ghcr.io/pterodactyl/yolks:java_8'
+                      egg_features:
+                        - eula
+                        - java_version
+                        - pid_limit
+                      feature_limits:
+                        databases: 0
+                        allocations: 0
+                        backups: 2
+                      status: null
+                      is_suspended: false
+                      is_installing: false
+                      is_transferring: false
+                      relationships:
+                        allocations:
+                          object: list
+                          data:
+                            - object: allocation
+                              attributes:
+                                id: 23
+                                ip: 127.0.0.1
+                                ip_alias: null
+                                port: 25668
+                                notes: null
+                                is_default: true
+                        variables:
+                          object: list
+                          data:
+                            - object: egg_variable
+                              attributes:
+                                name: Server Jar File
+                                description: The name of the server jarfile to run the server with.
+                                env_variable: SERVER_JARFILE
+                                default_value: server.jar
+                                server_value: server.jar
+                                is_editable: true
+                                rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                            - object: egg_variable
+                              attributes:
+                                name: Server Version
+                                description: 'The version of Minecraft Vanilla to install. Use "latest" to install the latest version, or use "snapshot" to install the latest snapshot. Go to Settings > Reinstall Server to apply.'
+                                env_variable: VANILLA_VERSION
+                                default_value: latest
+                                server_value: latest
+                                is_editable: true
+                                rules: 'required|string|between:3,15'
+                    meta:
+                      is_server_owner: false
+                      user_permissions:
+                        - '*'
+                        - admin.websocket.errors
+                        - admin.websocket.install
+                        - admin.websocket.transfer
+      operationId: get-server-websocket
+      description: 'Returns credentials and a connection address to access the server''s websocket. _This is not an actual websocket connection, you must connect seperately using the details returned by this endpoint._'
+      parameters: []
+      tags:
+        - Server
+    parameters:
+      - $ref: '#/components/parameters/server'
+  '/servers/{server}/resources':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Resource usage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    object: stats
+                    attributes:
+                      current_state: offline
+                      is_suspended: false
+                      resources:
+                        memory_bytes: 0
+                        cpu_absolute: 0
+                        disk_bytes: 119574551
+                        network_rx_bytes: 0
+                        network_tx_bytes: 0
+                        uptime: 0
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - stats
+                  attributes:
+                    type: object
+                    properties:
+                      current_state:
+                        type: string
+                        enum:
+                          - offline
+                          - running
+                          - starting
+                          - stopping
+                      is_suspended:
+                        type: boolean
+                      resources:
+                        type: object
+                        properties:
+                          memory_bytes:
+                            type: number
+                          cpu_absolute:
+                            type: number
+                          disk_bytes:
+                            type: number
+                          network_rx_bytes:
+                            type: number
+                          network_tx_bytes:
+                            type: number
+                          uptime:
+                            type: number
+              examples:
+                example-1:
+                  value:
+                    object: stats
+                    attributes:
+                      current_state: offline
+                      is_suspended: false
+                      resources:
+                        memory_bytes: 0
+                        cpu_absolute: 0
+                        disk_bytes: 119574551
+                        network_rx_bytes: 0
+                        network_tx_bytes: 0
+                        uptime: 0
+      operationId: get-servers-identifier-resources
+      description: 'Returns the current resource usage for the specified server. This endpoint utilizes a caching mechanism, updates can take up to 10 seconds to reflect. For real-time statistics, you should connect to the server''s websocket to recieve stats pushed in real time.'
+      tags:
+        - Server
+  '/servers/{server}/command':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    post:
+      summary: Send command
+      operationId: post-server-command
+      responses:
+        '204':
+          description: No Content
+        '502':
+          description: 'A `502: Bad Gateway` error is returned when the server is currently offline and cannot recieve commands.'
+      description: Send a command to a running server.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  command: 'Hello World :)'
+              properties:
+                command:
+                  type: string
+                  description: The command to be sent to the server instance.
+                  minLength: 1
+              required:
+                - command
+            examples:
+              example-1:
+                value:
+                  command: 'Hello World :)'
+        description: ''
+      tags:
+        - Server
+  '/servers/{server}/power':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    post:
+      summary: Send Power Action
+      operationId: post-server-power
+      responses:
+        '204':
+          description: No Content
+      description: Sends a power action to the server.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  signal: stop
+              properties:
+                signal:
+                  type: string
+                  enum:
+                    - start
+                    - stop
+                    - restart
+                    - kill
+              required:
+                - signal
+      tags:
+        - Server
+  '/servers/{server}/databases':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get server databases
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    object: list
+                    data:
+                      - object: server_database
+                        attributes:
+                          id: 8mep2bMy
+                          host:
+                            address: database
+                            port: 3306
+                          name: s4_test
+                          username: u4_1M7XhHr5rU
+                          connections_from: '%'
+                          max_connections: 0
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - server_database
+                        attributes:
+                          $ref: '#/components/schemas/server-database'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: server_database
+                        attributes:
+                          id: 8mep2bMy
+                          host:
+                            address: database
+                            port: 3306
+                          name: s4_test
+                          username: u4_1M7XhHr5rU
+                          connections_from: '%'
+                          max_connections: 0
+      operationId: get-server-databases
+      parameters:
+        - $ref: '#/components/parameters/include'
+      description: Returns all of the databases that exist for the server.
+      tags:
+        - Server Databases
+    post:
+      summary: Create server database
+      operationId: post-server-databases
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    object: server_database
+                    attributes:
+                      id: 8mep2bMy
+                      host:
+                        address: database
+                        port: 3306
+                      name: s4_test
+                      username: u4_1M7XhHr5rU
+                      connections_from: '%'
+                      max_connections: 0
+                properties:
+                  object:
+                    type: string
+                  attributes:
+                    $ref: '#/components/schemas/server-database'
+      description: Creates a new database for the server.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  database: ''
+                  remote: ''
+              properties:
+                database:
+                  type: string
+                  pattern: '^[A-Za-z0-9_-]$'
+                  minLength: 3
+                  maxLength: 48
+                remote:
+                  type: string
+                  pattern: '^[A-Za-z0-9_-/.%:]$'
+                  minLength: 1
+              required:
+                - database
+                - remote
+      tags:
+        - Server Databases
+  '/servers/{server}/databases/{database}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/database'
+    delete:
+      summary: Delete database
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-server-database
+      description: Deletes the given database for the server.
+      tags:
+        - Server Databases
+  '/servers/{server}/databases/{database}/rotate-password':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/database'
+    post:
+      summary: Rotate database password
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    object: server_database
+                    attributes:
+                      id: 8mep2bMy
+                      host:
+                        address: database
+                        port: 3306
+                      name: s4_test
+                      username: u4_1M7XhHr5rU
+                      connections_from: '%'
+                      max_connections: 0
+                      relationships:
+                        password:
+                          object: database_password
+                          attributes:
+                            password: cHl0=bmgm9sF4.@@=BcXDmDi
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - server_database
+                  attributes:
+                    $ref: '#/components/schemas/server-database'
+      operationId: post-server-database-rotate-password
+      description: Generates a new random password for the database.
+      tags:
+        - Server Databases
+  '/servers/{server}/startup':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get Server Startup
+      tags:
+        - Server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - egg_variable
+                        attributes:
+                          $ref: '#/components/schemas/egg-variable'
+                  meta:
+                    type: object
+                    properties:
+                      startup_command:
+                        type: string
+                        description: The startup command for the server with all variables replaced.
+                        example: java -Xms128M -Xmx256M -jar bungeecord.jar
+                      raw_startup_command:
+                        type: string
+                        description: The raw startup command without variables replaced.
+                        example: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'
+                      docker_images:
+                        type: object
+                        minProperties: 0
+                        description: An object containing all docker images that can be used for this server's egg.
+      operationId: get-servers-server-startup
+      description: Returns the startup command and variables for a server.
+  '/servers/{server}/startup/variable':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    put:
+      summary: Update Server Variable
+      tags:
+        - Server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - egg_variable
+                  attributes:
+                    $ref: '#/components/schemas/egg-variable'
+                  meta:
+                    type: object
+                    properties:
+                      startup_command:
+                        type: string
+                      raw_startup_command:
+                        type: string
+      operationId: put-servers-server-startup-variable
+      description: Updates an egg variable for a server.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: The `env_variable` value from the Egg Variable that should be updated.
+                  example: BUNGEE_VERSION
+                value:
+                  type:
+                    - string
+                    - number
+                    - boolean
+                    - 'null'
+                  description: 'The value to set for this variable — an empty value is allowed, but this key must always be present in the request.'
+                  example: 1.19.1
+              required:
+                - key
+                - value
+  '/servers/{server}/settings/rename':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Rename Server
+      tags:
+        - Server
+      responses:
+        '204':
+          description: No Content
+      operationId: post-servers-server-settings-rename
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 191
+              required:
+                - name
+      description: Renames a server in the Panel.
+  '/servers/{server}/settings/reinstall':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Reinstall Server
+      tags:
+        - Server
+      responses:
+        '202':
+          description: Accepted
+      operationId: reinstall-server
+      description: Triggers a reinstallation of the server.
+  '/servers/{server}/settings/docker-image':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    post:
+      summary: Update Docker Image
+      tags:
+        - Server
+      responses:
+        '204':
+          description: No Content
+      operationId: server-update-docker-image
+      description: 'Updates the docker image that the server runs with. If the server''s docker image has been manually set by an administrator it cannot be updated by this endpoint and a `400: Bad Request` error will be returned.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                docker_image:
+                  type: string
+                  description: 'Must be one of the docker images returned by the API call to `/servers/{server}/startup`. A validation error will be returned if it is invalid.'
+              required:
+                - docker_image
+  '/servers/{server}/backups':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get Server Backups
+      tags:
+        - Server Backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/backup'
+                  - type: object
+                    properties:
+                      meta:
+                        type: object
+                        properties:
+                          backup_count:
+                            type: number
+      operationId: get-servers-server-backups
+      description: Returns all of the backups that exist for a server.
+    post:
+      summary: Create Server Backup
+      tags:
+        - Server Backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/backup'
+      operationId: post-servers-server-backups
+      description: 'Creates a new backup for a server. Backups are performed in the background and will not be complete when this endpoint returns a successful value. You must connect to the server websocket and listen for a completion event, or poll the server backup listing endpoint to see when it is completed.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the backup, if not provided the current date and time is used.'
+                  maxLength: 191
+                is_locked:
+                  type: boolean
+                  description: Wether or not the backup is considered locked once created. A locked backup is never deleted by system processes when the overall limit is reached for a server.
+                ignored:
+                  type: array
+                  description: An array of files and folders to ignore when performing the backup.
+                  items:
+                    type: string
+  '/servers/{server}/backups/{backup}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - schema:
+          type: string
+        name: backup
+        in: path
+        required: true
+        description: The UUID of the backup being requested.
+    get:
+      summary: Get Backup
+      tags:
+        - Server Backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/backup'
+      operationId: get-servers-server-backups-backup
+      description: Returns a single backup for a server.
+    delete:
+      summary: Delete Backup
+      tags:
+        - Server Backups
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-servers-server-backups-backup
+      description: 'Deletes a backup for a server, even if the backup has `is_locked` set to `true`.'
+  '/servers/{server}/backups/{backup}/download':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+      - schema:
+          type: string
+        name: backup
+        in: path
+        required: true
+        description: The UUID of the backup being requested.
+    get:
+      summary: Download Backup
+      tags:
+        - Server Backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: signed_url
+                    enum:
+                      - signed_url
+                  attributes:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+      operationId: server-download-backup
+      description: Returns an endpoint to download a backup.
+  '/servers/{server}/backups/{backup}/lock':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+      - schema:
+          type: string
+        name: backup
+        in: path
+        required: true
+        description: The UUID of the backup being requested.
+    post:
+      summary: Lock Backup
+      operationId: post-servers-server-backups-backup-download---copy
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/backup'
+      description: Toggles the `is_locked` status of a backup.
+      tags:
+        - Server Backups
+  '/servers/{server}/backups/{backup}/restore':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+      - schema:
+          type: string
+        name: backup
+        in: path
+        required: true
+        description: The UUID of the backup being requested.
+    post:
+      summary: Restore Backup
+      operationId: server-restore-backup
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: 'A `400: Bad Request` response is returned if the backup is not currently completed (or has failed), or when a server is currently installing, transferring, or restoring from a different backup.'
+      description: Restores a backup for a server. This will overwrite any existing files while running.
+      tags:
+        - Server Backups
+  '/servers/{server}/files/list':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Files
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    object: list
+                    data:
+                      - object: file_object
+                        attributes:
+                          name: logs
+                          mode: drwxr-xr-x
+                          mode_bits: '755'
+                          size: 4096
+                          is_file: false
+                          is_symlink: false
+                          mimetype: inode/directory
+                          created_at: '2022-11-30T00:23:42-05:00'
+                          modified_at: '2022-11-30T00:23:42-05:00'
+                      - object: file_object
+                        attributes:
+                          name: modules
+                          mode: drwxr-xr-x
+                          mode_bits: '755'
+                          size: 4096
+                          is_file: false
+                          is_symlink: false
+                          mimetype: inode/directory
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2020-09-06T19:59:16-04:00'
+                      - object: file_object
+                        attributes:
+                          name: new2
+                          mode: drwxr-xr-x
+                          mode_bits: '755'
+                          size: 4096
+                          is_file: false
+                          is_symlink: false
+                          mimetype: inode/directory
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2022-11-07T23:10:42-05:00'
+                      - object: file_object
+                        attributes:
+                          name: plugins
+                          mode: drwxr-xr-x
+                          mode_bits: '755'
+                          size: 4096
+                          is_file: false
+                          is_symlink: false
+                          mimetype: inode/directory
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2020-09-06T20:00:10-04:00'
+                      - object: file_object
+                        attributes:
+                          name: waterfall.yml
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 189
+                          is_file: true
+                          is_symlink: false
+                          mimetype: text/plain; charset=utf-8
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2022-05-17T14:43:09-04:00'
+                      - object: file_object
+                        attributes:
+                          name: waterfall.jar
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 13650029
+                          is_file: true
+                          is_symlink: false
+                          mimetype: application/jar
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2020-09-06T19:58:09-04:00'
+                      - object: file_object
+                        attributes:
+                          name: server-icon.png
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 8859
+                          is_file: true
+                          is_symlink: false
+                          mimetype: image/png
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2020-06-12T12:00:42-04:00'
+                      - object: file_object
+                        attributes:
+                          name: modules.yml
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 155
+                          is_file: true
+                          is_symlink: false
+                          mimetype: text/plain; charset=utf-8
+                          created_at: '2022-11-25T14:33:40-05:00'
+                          modified_at: '2022-11-25T14:33:40-05:00'
+                      - object: file_object
+                        attributes:
+                          name: locations.yml
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 460
+                          is_file: true
+                          is_symlink: false
+                          mimetype: text/plain; charset=utf-8
+                          created_at: '2022-12-04T19:29:01-05:00'
+                          modified_at: '2022-12-04T19:29:01-05:00'
+                      - object: file_object
+                        attributes:
+                          name: coollogo_com-228311438.png
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 9251
+                          is_file: true
+                          is_symlink: false
+                          mimetype: image/png
+                          created_at: '2022-11-25T14:33:15-05:00'
+                          modified_at: '2020-06-12T12:17:08-04:00'
+                      - object: file_object
+                        attributes:
+                          name: config.yml
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 1718
+                          is_file: true
+                          is_symlink: false
+                          mimetype: text/plain; charset=utf-8
+                          created_at: '2022-11-25T14:34:01-05:00'
+                          modified_at: '2022-11-25T14:34:01-05:00'
+                properties:
+                  object:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                        attributes:
+                          $ref: '#/components/schemas/file-object'
+              examples:
+                Example 1:
+                  value:
+                    object: string
+                    data:
+                      - object: string
+                        attributes:
+                          name: hello_world.js
+                          mode: '-rw-r--r--'
+                          mode_bits: '644'
+                          size: 2048
+                          is_file: true
+                          is_symlink: false
+                          mimetype: text/javascript
+                          created_at: '2022-07-24T20:52:08+00:00'
+                          modified_at: '2022-07-24T20:52:08+00:00'
+      operationId: get-servers-server-files-list
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: directory
+          description: The target directory to get files from
+      description: List all files in a given directory for a given server
+  '/servers/{server}/files/contents':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    get:
+      summary: Get File Contents
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                Example 1:
+                  value: eula=true
+      operationId: get-server-file-contents
+      parameters:
+        - $ref: '#/components/parameters/file'
+      description: Get the raw contents of a file
+  '/servers/{server}/files/download':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    get:
+      summary: Get File Download Url
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    object: signed_url
+                    attributes:
+                      url: 'https://n0.oaka.xyz:443/download/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjQ1Yjg3OTFhYTZiYmQxNzg0YjY3MjlmZGEyMGYyZmQ2In0.eyJpc3MiOiJodHRwczovL3BhbmVsLm9ha2EueHl6LyIsImF1ZCI6WyJodHRwczovL24wLm9ha2EueHl6OjQ0MyJdLCJqdGkiOiI0NWI4NzkxYWE2YmJkMTc4NGI2NzI5ZmRhMjBmMmZkNiIsImlhdCI6MTY3MDIwMDc2MiwibmJmIjoxNjcwMjAwNDYyLCJleHAiOjE2NzAyMDE2NjIsImZpbGVfcGF0aCI6ImV1bGEudHh0Iiwic2VydmVyX3V1aWQiOiI0ZDNlMTQwMS03MjkzLTQ0OTEtOTBkZi1jZWE4MjQ2ZmMyODMiLCJ1c2VyX3V1aWQiOiIyNjczNGFiOS1kYWJkLTQ0YzktOWRlZS01ZDgxNDM0MzU5ZTAiLCJ1c2VyX2lkIjoxLCJ1bmlxdWVfaWQiOiJac0pKdDdnRUpZYkpFTVFXIn0.helv0TTLiMGvihOH9zPI5iCaFDVlki_WAzDrR0AvUqg'
+                properties:
+                  object:
+                    type: string
+                  attributes:
+                    $ref: '#/components/schemas/signed-url'
+              examples:
+                Example 1:
+                  value:
+                    object: signed_url
+                    attributes:
+                      url: 'https://n0.oaka.xyz:443/download/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjQ1Yjg3OTFhYTZiYmQxNzg0YjY3MjlmZGEyMGYyZmQ2In0.eyJpc3MiOiJodHRwczovL3BhbmVsLm9ha2EueHl6LyIsImF1ZCI6WyJodHRwczovL24wLm9ha2EueHl6OjQ0MyJdLCJqdGkiOiI0NWI4NzkxYWE2YmJkMTc4NGI2NzI5ZmRhMjBmMmZkNiIsImlhdCI6MTY3MDIwMDc2MiwibmJmIjoxNjcwMjAwNDYyLCJleHAiOjE2NzAyMDE2NjIsImZpbGVfcGF0aCI6ImV1bGEudHh0Iiwic2VydmVyX3V1aWQiOiI0ZDNlMTQwMS03MjkzLTQ0OTEtOTBkZi1jZWE4MjQ2ZmMyODMiLCJ1c2VyX3V1aWQiOiIyNjczNGFiOS1kYWJkLTQ0YzktOWRlZS01ZDgxNDM0MzU5ZTAiLCJ1c2VyX2lkIjoxLCJ1bmlxdWVfaWQiOiJac0pKdDdnRUpZYkpFTVFXIn0.helv0TTLiMGvihOH9zPI5iCaFDVlki_WAzDrR0AvUqg'
+      operationId: get-server-file-download
+      parameters:
+        - $ref: '#/components/parameters/file'
+      description: Get a signed download link to the file
+  '/servers/{server}/files/rename':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    put:
+      summary: Rename Files
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+      operationId: get-server-rename-files
+      parameters:
+        - $ref: '#/components/parameters/file'
+      description: Rename one or more files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                files:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+              x-examples:
+                Example 1:
+                  root: /
+                  files:
+                    - from: test.txt
+                      to: test2.txt
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  files:
+                    - from: test.txt
+                      to: test2.txt
+                    - from: demo.txt
+                      to: demos/demo1.txt
+        description: 'Relative to the "root", rename files'
+  '/servers/{server}/files/copy':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    post:
+      summary: Copy File
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+      operationId: post-server-copy-file
+      parameters:
+        - $ref: '#/components/parameters/file'
+      description: Copy a file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+              x-examples:
+                Example 1:
+                  location: test.txt
+            examples:
+              Example 1:
+                value:
+                  location: test.txt
+        description: Copy a file at the given path
+  '/servers/{server}/files/write':
+    parameters:
+      - name: server
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The server UUID.
+    post:
+      summary: Write File
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+      operationId: post-server-write-file
+      parameters:
+        - $ref: '#/components/parameters/file'
+      description: Write a file
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              x-examples:
+                Example 1:
+                  location: test.txt
+            examples:
+              Example 1:
+                value: eula=true
+        description: Write to file
+components:
+  schemas:
+    allocation:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          id: 43
+          ip: 192.168.1.50
+          ip_alias: n0.oaka.xyz
+          port: 25567
+          notes: null
+          is_default: true
+      examples:
+        - id: 43
+          ip: 192.168.1.50
+          ip_alias: External
+          port: 25567
+          notes: null
+          is_default: true
+      title: Allocation
+      properties:
+        id:
+          type: number
+        ip:
+          type: string
+          minLength: 1
+        ip_alias:
+          type:
+            - string
+            - 'null'
+          minLength: 1
+        port:
+          type: number
+        notes:
+          type:
+            - string
+            - 'null'
+        is_default:
+          type: boolean
+    egg-variable:
+      description: An egg variable represents a single configuration value for an `Egg` model on the Panel.
+      type: object
+      x-examples:
+        example-1:
+          name: Minecraft Version
+          description: "The version of minecraft to download. \r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+          env_variable: MINECRAFT_VERSION
+          default_value: latest
+          server_value: latest
+          is_editable: true
+          rules: 'nullable|string|max:20'
+      examples:
+        - name: Minecraft Version
+          description: "The version of minecraft to download. \r\n\r\nLeave at latest to always get the latest version. Invalid versions will default to latest."
+          env_variable: MINECRAFT_VERSION
+          default_value: latest
+          server_value: 1.12.2
+          is_editable: true
+          rules: 'nullable|string|max:20'
+      title: Egg Variable
+      properties:
+        name:
+          type: string
+          description: The variable name.
+        description:
+          type: string
+          description: The variable description
+        env_variable:
+          type: string
+          description: The environment variable that is passed into containers and can be used in the startup command.
+        default_value:
+          type: string
+          description: The default value for this variable if it is not overridden by the server.
+        server_value:
+          type: string
+          description: If the server has specified a new value for this variable it will be present in this field. If no value has been specified it will be equal to `default_value`.
+        is_editable:
+          type: boolean
+          description: If the field can be edited by end users on the Panel.
+        rules:
+          type: string
+          description: Validation rules that are applied to the field value.
+    server:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          server_owner: true
+          identifier: 4d3e1401
+          internal_id: 2
+          uuid: 4d3e1401-7293-4491-90df-cea8246fc283
+          name: Waterfall
+          node: Osiris
+          sftp_details:
+            ip: n0.oaka.xyz
+            port: 2022
+          description: Oaka Craft Proxy
+          limits:
+            memory: 512
+            swap: 0
+            disk: 512
+            io: 500
+            cpu: 0
+            threads: null
+            oom_disabled: true
+          invocation: java -Xms128M -Xmx512M -jar waterfall.jar
+          docker_image: 'quay.io/pterodactyl/core:java'
+          egg_features: null
+          feature_limits:
+            databases: null
+            allocations: 0
+            backups: 10
+          status: null
+          is_suspended: false
+          is_installing: false
+          is_transferring: false
+          relationships:
+            allocations:
+              object: list
+              data:
+                - object: allocation
+                  attributes:
+                    id: 45
+                    ip: 192.168.1.50
+                    ip_alias: n0.oaka.xyz
+                    port: 25569
+                    notes: null
+                    is_default: true
+            variables:
+              object: list
+              data:
+                - object: egg_variable
+                  attributes:
+                    name: Minecraft Version
+                    description: The version of Minecraft that water was built to support.
+                    env_variable: MINECRAFT_VERSION
+                    default_value: latest
+                    server_value: latest
+                    is_editable: true
+                    rules: 'required|alpha_num|between:1,6'
+                - object: egg_variable
+                  attributes:
+                    name: Waterfall Jar File
+                    description: The name of the Jarfile to use when running Waterfall.
+                    env_variable: SERVER_JARFILE
+                    default_value: waterfall.jar
+                    server_value: waterfall.jar
+                    is_editable: true
+                    rules: 'required|regex:/^([\w\d._-]+)(\.jar)$/'
+                - object: egg_variable
+                  attributes:
+                    name: Download Link
+                    description: A link to the server jar to download the waterfall jar.
+                    env_variable: DL_LINK
+                    default_value: ''
+                    server_value: ''
+                    is_editable: true
+                    rules: nullable|string
+                - object: egg_variable
+                  attributes:
+                    name: Waterfall build number
+                    description: "Default is latest.\r\n\r\nif set to latest or an invalid version will grab the latest build number."
+                    env_variable: BUILD_NUMBER
+                    default_value: latest
+                    server_value: latest
+                    is_editable: true
+                    rules: 'required|string|max:20'
+      examples:
+        - server_owner: true
+          identifier: string
+          internal_id: 0
+          uuid: string
+          name: string
+          node: string
+          sftp_details:
+            ip: string
+            port: 0
+          description: string
+          limits:
+            memory: 0
+            swap: 0
+            disk: 0
+            io: 0
+            cpu: 0
+            threads: null
+            oom_disabled: true
+          invocation: string
+          docker_image: string
+          egg_features:
+            - string
+          feature_limits:
+            databases: null
+            allocations: 0
+            backups: 0
+          status: string
+          is_suspended: true
+          is_installing: true
+          is_transferring: true
+          relationships:
+            allocations:
+              object: string
+              data:
+                - object: string
+                  attributes:
+                    id: 43
+                    ip: 192.168.1.50
+                    ip_alias: External
+                    port: 25567
+                    notes: null
+                    is_default: true
+            variables:
+              object: string
+              data:
+                - object: string
+                  attributes:
+                    name: string
+                    description: string
+                    env_variable: string
+                    default_value: string
+                    server_value: string
+                    is_editable: true
+                    rules: string
+      title: Server
+      properties:
+        server_owner:
+          type: boolean
+        identifier:
+          type: string
+        internal_id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        node:
+          type: string
+        sftp_details:
+          type: object
+          properties:
+            ip:
+              type: string
+            port:
+              type: number
+        description:
+          type: string
+        limits:
+          type: object
+          properties:
+            memory:
+              type: number
+            swap:
+              type: number
+            disk:
+              type: number
+            io:
+              type: number
+            cpu:
+              type: number
+            threads:
+              type:
+                - string
+                - 'null'
+            oom_disabled:
+              type: boolean
+        invocation:
+          type: string
+        docker_image:
+          type: string
+        egg_features:
+          type: array
+          items:
+            type: string
+        feature_limits:
+          type: object
+          properties:
+            databases:
+              description: TODO
+              type: number
+            allocations:
+              type: number
+            backups:
+              type: number
+        status:
+          type:
+            - string
+            - 'null'
+          enum:
+            - installing
+            - suspended
+            - install_failed
+            - restoring_backup
+            - transferring
+            - null
+        is_suspended:
+          type: boolean
+        is_installing:
+          type: boolean
+        is_transferring:
+          type: boolean
+        relationships:
+          type: object
+          description: Relationships are generally only included when requested using the `include` parameter on a request.
+          properties:
+            allocations:
+              type: object
+              description: The allocations assigned to this server
+              properties:
+                object:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                      attributes:
+                        $ref: '#/components/schemas/allocation'
+            variables:
+              type: object
+              description: The egg variables for this server
+              properties:
+                object:
+                  type: string
+                data:
+                  type: array
+                  uniqueItems: true
+                  items:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                      attributes:
+                        $ref: '#/components/schemas/egg-variable'
+            egg:
+              type: object
+              description: The egg this server is using. shows on include=egg
+              properties:
+                object:
+                  type: string
+                attributes:
+                  type: object
+                  properties:
+                    uuid:
+                      type: string
+                    name:
+                      type: string
+            subusers:
+              type: object
+              description: TODO. The subusers on this server. Shows on include=subusers.
+              properties:
+                object:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+    api-key:
+      type: object
+      x-examples:
+        example-1:
+          identifier: DkXVQLiLMVb1V7lA
+          description: API Test
+          allowed_ips: []
+          last_used_at: null
+          created_at: '2022-02-13T17:58:48-05:00'
+      examples:
+        - identifier: DkXVQLiLMVb1V7lA
+          description: API Test
+          allowed_ips: []
+          last_used_at: null
+          created_at: '2022-02-13T17:58:48-05:00'
+      title: API Key
+      properties:
+        identifier:
+          type: string
+        description:
+          type: string
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        last_used_at:
+          type:
+            - 'null'
+            - string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    server-database:
+      type: object
+      properties:
+        id:
+          type: string
+        host:
+          type: object
+          properties:
+            address:
+              type: string
+            port:
+              type: integer
+        name:
+          type: string
+        username:
+          type: string
+        connections_from:
+          type: string
+        max_connections:
+          type: integer
+        relationships:
+          type: object
+          properties:
+            password:
+              type: object
+              properties:
+                object:
+                  type: string
+                attributes:
+                  type: object
+                  properties:
+                    password:
+                      type: string
+      x-examples:
+        example-1:
+          id: string
+          host:
+            address: string
+            port: 0
+          name: string
+          username: string
+          connections_from: string
+          max_connections: 0
+          relationships:
+            password:
+              object: string
+              attributes:
+                password: string
+      examples:
+        - id: 8mep2bMy
+          host:
+            address: database
+            port: 3306
+          name: s4_test
+          username: u4_1M7XhHr5rU
+          connections_from: '%'
+          max_connections: 0
+        - id: 8mep2bMy
+          host:
+            address: database
+            port: 3306
+          name: s4_test
+          username: u4_1M7XhHr5rU
+          connections_from: '%'
+          max_connections: 0
+          relationships:
+            password:
+              object: database_password
+              attributes:
+                password: '!Crfglrkg@emC^UGnDcS.FlW'
+      title: Server Database
+      x-stoplight:
+        id: 32fc0018c8117
+    file-object:
+      type: object
+      x-examples:
+        example-1:
+          name: ''
+          mode: ''
+          mode_bits: ''
+          size: 0
+          is_file: true
+          is_symlink: false
+          mimetype: ''
+          created_at: '2020-01-01T00:00:00.000Z'
+          modified_at: '2020-01-01T00:00:00.000Z'
+      title: File Object
+      description: Represents a single file or folder present in a server's filesystem.
+      examples:
+        - name: hello_world.js
+          mode: '-rw-r--r--'
+          mode_bits: '644'
+          size: 2048
+          is_file: true
+          is_symlink: false
+          mimetype: text/javascript
+          created_at: '2022-07-24T20:52:08+00:00'
+          modified_at: '2022-07-24T20:52:08+00:00'
+      properties:
+        name:
+          type: string
+          description: The name of the file.
+        mode:
+          type: string
+        mode_bits:
+          type: string
+        size:
+          type: integer
+          description: 'The size of the file, in bytes. For folders this value can differ, but is not an accurate representation of the underlying data space used.'
+        is_file:
+          type: boolean
+        is_symlink:
+          type: boolean
+        mimetype:
+          type: string
+          description: The detected mimetype of the file. For folders this value will always be `inode/directory`.
+        created_at:
+          type: string
+          format: date-time
+          description: When the file was created on the filesystem.
+        modified_at:
+          type: string
+          format: date-time
+          description: When the file was last modified on the filesystem.
+    error:
+      type: object
+      title: Error
+      x-stoplight:
+        id: sz6grokvq5qzq
+      properties:
+        code:
+          type: string
+          example: ValidationException
+        status:
+          type: string
+          example: '422'
+        detail:
+          type: string
+          example: The description field is required.
+        meta:
+          oneOf:
+            - properties:
+                source_field:
+                  type: string
+                  example: description
+                rule:
+                  type: string
+                  example: required
+          type:
+            - object
+            - 'null'
+      required:
+        - code
+        - status
+        - detail
+      readOnly: true
+      examples:
+        - code: ValidationException
+          status: '422'
+          detail: The description field is required.
+          meta:
+            source_field: description
+            rule: required
+      description: Describes an error returned by the Panel to an API caller.
+      x-internal: false
+    pagination:
+      type: object
+      x-examples:
+        example-1:
+          total: 1
+          count: 1
+          per_page: 50
+          current_page: 1
+          total_pages: 1
+          links: {}
+      properties:
+        total:
+          type: integer
+          minimum: 0
+          description: The total number of entities that are being evaluated.
+        count:
+          type: integer
+          description: The total number of entities returned in this request.
+          minimum: 0
+        per_page:
+          type: integer
+          description: The total number of entities loaded per page. This can generally be adjusted using the `per_page` parameter in requests.
+          minimum: 1
+        current_page:
+          type: integer
+          description: The current page in the pagination set that is being returned. This can be changed using the `page` parameter on requests.
+          minimum: 1
+        total_pages:
+          type: integer
+          description: The total number of pages.
+          minimum: 1
+        links:
+          type: object
+      description: A pagination model represents a paginated set of data returned by the API. This can be used to determine how many additional requests are needed to load in all of the data.
+      title: Pagination
+    backup:
+      title: Backup
+      x-stoplight:
+        id: qjsiassol76mo
+      type: object
+      description: Represents a single backup for a server.
+      examples:
+        - object: backup
+          attributes:
+            uuid: 793d57b3-ebcd-43f0-874d-3728e91d0927
+            is_successful: true
+            is_locked: true
+            name: Hodor 123
+            ignored_files:
+              - world/
+            checksum: 'sha1:129ecd218e050e7abd83e9875da2b4a546d72d1d'
+            bytes: 17740732
+            created_at: '2022-05-29T16:12:21-04:00'
+            completed_at: '2022-05-29T16:12:24-04:00'
+      properties:
+        object:
+          type: string
+          enum:
+            - backup
+          example: backup
+        attributes:
+          type: object
+          properties:
+            uuid:
+              type: string
+              format: uuid
+            name:
+              type: string
+            ignored_files:
+              type: array
+              items:
+                type: string
+            checksum:
+              type:
+                - string
+                - 'null'
+              description: 'The SHA256 checksum for the backup, or an empty string if the backup has not been completed.'
+            bytes:
+              type: number
+              description: The total size of the backup once completed. If `completed_at` is `null` this value will be `0`.
+            is_locked:
+              type: boolean
+              description: A locked backup cannot be automatically deleted by the system.
+            is_successful:
+              description: A backup is only considered to not be successful if it fails. This value will be `true` even while a backup is being generated. It is only set to `false` if the backup explicitly fails to generate.
+              type: boolean
+            created_at:
+              type: string
+            completed_at:
+              type: string
+    signed-url:
+      type: object
+      x-examples:
+        Example 1:
+          url: 'https://n0.oaka.xyz:443/download/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjQ1Yjg3OTFhYTZiYmQxNzg0YjY3MjlmZGEyMGYyZmQ2In0.eyJpc3MiOiJodHRwczovL3BhbmVsLm9ha2EueHl6LyIsImF1ZCI6WyJodHRwczovL24wLm9ha2EueHl6OjQ0MyJdLCJqdGkiOiI0NWI4NzkxYWE2YmJkMTc4NGI2NzI5ZmRhMjBmMmZkNiIsImlhdCI6MTY3MDIwMDc2MiwibmJmIjoxNjcwMjAwNDYyLCJleHAiOjE2NzAyMDE2NjIsImZpbGVfcGF0aCI6ImV1bGEudHh0Iiwic2VydmVyX3V1aWQiOiI0ZDNlMTQwMS03MjkzLTQ0OTEtOTBkZi1jZWE4MjQ2ZmMyODMiLCJ1c2VyX3V1aWQiOiIyNjczNGFiOS1kYWJkLTQ0YzktOWRlZS01ZDgxNDM0MzU5ZTAiLCJ1c2VyX2lkIjoxLCJ1bmlxdWVfaWQiOiJac0pKdDdnRUpZYkpFTVFXIn0.helv0TTLiMGvihOH9zPI5iCaFDVlki_WAzDrR0AvUqg'
+      properties:
+        url:
+          type: string
+          format: uri
+      title: Signed Url
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: ''
+  responses:
+    '400':
+      description: 'A `400: Bad Request` response is generally returned when the request you''re making cannot be processed, and is not due to an internal server error or validation issue. This error almost always will include additional details about why the operation could not be completed.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                    status:
+                      type: string
+                    detail:
+                      type: string
+            x-examples:
+              example-1:
+                errors:
+                  - code: InvalidFilterQuery
+                    status: '400'
+                    detail: 'Requested filter(s) `0` are not allowed. Allowed filter(s) are `uuid, name, external_id, *`.'
+          examples:
+            Invalid Filter Type:
+              value:
+                errors:
+                  - code: InvalidFilterQuery
+                    status: '400'
+                    detail: 'Requested filter(s) `0` are not allowed. Allowed filter(s) are `uuid, name, external_id, *`.'
+    '401':
+      description: 'A `401: Unauthorized` error is only returned when you fail to include proper authorization headers in your API request. This almost always means you are missing the `Authorization: Bearer abcd1234` header in your request, or it is being stripped out by a proxy layer.'
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            x-examples:
+              example-1:
+                errors:
+                  - code: HttpException
+                    status: '401'
+                    detail: A bearer token or valid user session cookie must be provided to access this endpoint.
+            properties:
+              errors:
+                type: array
+                uniqueItems: true
+                minItems: 1
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                    status:
+                      type: string
+                      pattern: '^[0-9]+'
+                      minLength: 3
+                      maxLength: 3
+                      default: '401'
+                      enum:
+                        - '401'
+                      example: '401'
+                    detail:
+                      type: string
+                  required:
+                    - code
+                    - status
+                    - detail
+            required:
+              - errors
+          examples:
+            No Header Provided:
+              value:
+                errors:
+                  - code: HttpException
+                    status: '401'
+                    detail: A bearer token or valid user session cookie must be provided to access this endpoint.
+      headers: {}
+    '403':
+      description: 'A `403: Permission Denied` error indicates that you lack permission to perform the given action. This is almost always due to providing an API key that does not have permission to access the resource you''ve requested, or the API key is scoped to other resources.'
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            x-examples:
+              example-1:
+                errors:
+                  - code: AccessDeniedHttpException
+                    status: '403'
+                    detail: This action is unauthorized.
+            properties:
+              errors:
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                    status:
+                      type: string
+                      pattern: '^[0-9]+'
+                      minLength: 3
+                      maxLength: 3
+                      enum:
+                        - '403'
+                      default: '403'
+                    detail:
+                      type: string
+                  required:
+                    - code
+                    - status
+                    - detail
+            required:
+              - errors
+          examples:
+            Unauthorized:
+              value:
+                errors:
+                  - code: AccessDeniedHttpException
+                    status: '403'
+                    detail: This action is unauthorized.
+    '405':
+      description: 'A `405: Method Not Allowed` error is returned if you make a request to an endpoint that exists, but does not support the given HTTP verb. For example, making a `POST` request to an endpoint that only accepts a `PUT`, or a `GET` request to a `POST` endpoint.'
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            x-examples:
+              example-1:
+                errors:
+                  - code: MethodNotAllowedHttpException
+                    status: '405'
+                    detail: Method is not supported for this route.
+            properties:
+              errors:
+                type: array
+                uniqueItems: true
+                items:
+                  $ref: '#/components/schemas/error'
+            required:
+              - errors
+          examples:
+            Method Not Allowed:
+              value:
+                errors:
+                  - code: MethodNotAllowedHttpException
+                    status: '405'
+                    detail: Method is not supported for this route.
+    '419':
+      description: 'A `419: CSRF Token Mismatch` error response is only returned when you are making improper requests to the API. This should _never_ be returned if you are only including the necessary headers for API authentication.'
+      content:
+        application/json:
+          schema:
+            type: object
+            x-examples:
+              example-1:
+                errors:
+                  - code: HttpException
+                    status: '419'
+                    detail: CSRF token mismatch.
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+          examples:
+            Mismatch:
+              value:
+                errors:
+                  - code: HttpException
+                    status: '419'
+                    detail: CSRF token mismatch.
+    '422':
+      description: 'A `422: Precondition Failed` response is returned when the data provided to the endpoint failed to pass validation controls. This error response will always include the specific fields that are impacted, and will indicate what changes are necessary to complete the request successfully.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+          examples:
+            Validation Error:
+              value:
+                errors:
+                  - code: ValidationException
+                    status: '422'
+                    detail: The description field is required.
+                    meta:
+                      source_field: description
+                      rule: required
+  parameters:
+    server:
+      name: server
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The server UUID.
+    api-key:
+      name: identifier
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Api Key id
+    include:
+      name: include
+      in: query
+      required: false
+      schema:
+        type: string
+      description: A comma delimited set of relationships to include
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      description: Which page of items to request
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+      description: How many items can be included per page
+    database:
+      name: database
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The database to act on
+    file:
+      name: file
+      in: query
+      required: false
+      schema:
+        type: string
+      description: the target file
+  requestBodies: {}
+security:
+  - BearerAuth: []
+tags:
+  - name: Account
+    description: Account Routes
+  - name: Server
+    description: Server Routes
+  - name: Server Backups
+    description: Server Backups Routes
+  - name: Server Databases
+    description: Server Databases Routes
+  - name: Server Files
+    description: Server Files Routes
