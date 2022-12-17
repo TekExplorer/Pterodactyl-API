@@ -2655,6 +2655,60 @@ paths:
         description: Contains information about the file to download and where to store it.
       tags:
         - Server Files
+  '/servers/{server}/files/chmod':
+    parameters:
+      - schema:
+          type: string
+        name: server
+        in: path
+        required: true
+    post:
+      summary: Change File Permissions
+      operationId: post-servers-server-files-chmod
+      responses:
+        '200':
+          description: OK
+      description: Updates file permissions for file(s) in the given root directory.
+      tags:
+        - Server Files
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory. Uses '/' if no directory is provided.
+                files:
+                  type: array
+                  description: An array of objects with a file and mode field.
+                  items:
+                    type: object
+                    minProperties: 2
+                    additionalProperties: false
+                    maxProperties: 2
+                    properties:
+                      file:
+                        type: string
+                        description: The name of the file.
+                      mode:
+                        type: integer
+                        description: The permissions to set the file to.
+                    required:
+                      - file
+                      - mode
+              required:
+                - files
+            examples:
+              Example 1:
+                value:
+                  root: /images
+                  files:
+                    - file: blank.png
+                      mode: 777
+        description: Contains information about the root directory and files to update permission of.
 components:
   schemas:
     allocation:
