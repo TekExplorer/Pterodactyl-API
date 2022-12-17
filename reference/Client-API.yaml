@@ -2683,8 +2683,22 @@ paths:
                   description: The root directory. Uses '/' if no directory is provided.
                 files:
                   type: array
-                  description: The files to update permission of.
-                  items: {}
+                  description: An array of objects with a file and mode field.
+                  items:
+                    type: object
+                    minProperties: 2
+                    additionalProperties: false
+                    maxProperties: 2
+                    properties:
+                      file:
+                        type: string
+                        description: The name of the file.
+                      mode:
+                        type: integer
+                        description: The permissions to set the file to.
+                    required:
+                      - file
+                      - mode
               required:
                 - files
             examples:
@@ -2692,7 +2706,8 @@ paths:
                 value:
                   root: /images
                   files:
-                    - blank.png
+                    - file: blank.png
+                      mode: 777
         description: Contains information about the root directory and files to update permission of.
 components:
   schemas:
