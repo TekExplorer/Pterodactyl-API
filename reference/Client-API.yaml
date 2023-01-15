@@ -3372,7 +3372,7 @@ components:
       description: ''
   responses:
     '400':
-      description: 'A `400: Bad Request` response is generally returned when the request you''re making cannot be processed, and is not due to an internal server error or validation issue. This error almost always will include additional details about why the operation could not be completed.'
+      description: 'A `400: Bad Request` error response is generally returned when the request you''re making cannot be processed, and is not due to an internal server error or validation issue. This error almost always will include additional details about why the operation could not be completed.'
       content:
         application/json:
           schema:
@@ -3403,7 +3403,7 @@ components:
                     status: '400'
                     detail: 'Requested filter(s) `0` are not allowed. Allowed filter(s) are `uuid, name, external_id, *`.'
     '401':
-      description: 'A `401: Unauthorized` error is only returned when you fail to include proper authorization headers in your API request. This almost always means you are missing the `Authorization: Bearer abcd1234` header in your request, or it is being stripped out by a proxy layer.'
+      description: 'A `401: Unauthorized` error response is only returned when you fail to include proper authorization headers in your API request. This almost always means you are missing the `Authorization: Bearer abcd1234` header in your request, or it is being stripped out by a proxy layer.'
       content:
         application/json:
           schema:
@@ -3451,7 +3451,7 @@ components:
                     detail: A bearer token or valid user session cookie must be provided to access this endpoint.
       headers: {}
     '403':
-      description: 'A `403: Permission Denied` error indicates that you lack permission to perform the given action. This is almost always due to providing an API key that does not have permission to access the resource you''ve requested, or the API key is scoped to other resources.'
+      description: 'A `403: Forbidden` error response indicates that you lack permission to perform the given action. This is almost always due to providing an API key that does not have permission to access the resource you''ve requested, or the API key is scoped to other resources.'
       content:
         application/json:
           schema:
@@ -3496,7 +3496,7 @@ components:
                     status: '403'
                     detail: This action is unauthorized.
     '405':
-      description: 'A `405: Method Not Allowed` error is returned if you make a request to an endpoint that exists, but does not support the given HTTP verb. For example, making a `POST` request to an endpoint that only accepts a `PUT`, or a `GET` request to a `POST` endpoint.'
+      description: 'A `405: Method Not Allowed` error response is returned if you make a request to an endpoint that exists, but does not support the given HTTP verb. For example, making a `POST` request to an endpoint that only accepts a `PUT`, or a `GET` request to a `POST` endpoint.'
       content:
         application/json:
           schema:
@@ -3548,7 +3548,7 @@ components:
                     status: '419'
                     detail: CSRF token mismatch.
     '422':
-      description: 'A `422: Precondition Failed` response is returned when the data provided to the endpoint failed to pass validation controls. This error response will always include the specific fields that are impacted, and will indicate what changes are necessary to complete the request successfully.'
+      description: 'A `422: Unprocessable Entity` error response is returned when the data provided to the endpoint failed to pass validation controls. This error response will always include the specific fields that are impacted, and will indicate what changes are necessary to complete the request successfully.'
       content:
         application/json:
           schema:
@@ -3607,7 +3607,7 @@ components:
       schema:
         type: integer
         minimum: 1
-        default: 20
+        default: 50
       description: How many items can be included per page
     database:
       name: database
