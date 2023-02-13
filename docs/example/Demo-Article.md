@@ -7,4 +7,4 @@ tags: [example]
 
 The beginning of an awesome article...
 
-!!SANITY CHECK
+!!SANITY CHECK!!
