@@ -274,7 +274,7 @@ paths:
     parameters: []
   /permissions:
     get:
-      summary: List Available Permissions
+      summary: List Permissions
       responses:
         '200':
           description: OK
@@ -619,7 +619,7 @@ paths:
         '405':
           $ref: '#/components/responses/405'
       operationId: get-permissions
-      description: Returns all of the permissions available on the Panel instance.
+      description: Returns all of the permissions on the Panel instance.
       x-internal: false
   /account:
     get:
@@ -984,7 +984,7 @@ paths:
                           last_used_at: '2022-03-01T01:41:51-05:00'
                           created_at: '2022-03-12T15:22:23-05:00'
       operationId: get-account-api-keys
-      description: Returns a list of all active API keys for an account
+      description: Returns a list of all active API keys for an account.
       tags:
         - Account
     parameters: []
@@ -1069,7 +1069,7 @@ paths:
     get:
       summary: Get SSH Keys
       operationId: get-account-ssh-keys
-      description: Returns a list of your ssh keys
+      description: Returns a list of your ssh keys.
       responses:
         '200':
           description: OK
@@ -1656,7 +1656,7 @@ paths:
                         network_tx_bytes: 0
                         uptime: 0
       operationId: get-servers-identifier-resources
-      description: 'Returns the current resource usage for the specified server. This endpoint utilizes a caching mechanism, updates can take up to 10 seconds to reflect. For real-time statistics, you should connect to the server''s websocket to recieve stats pushed in real time.'
+      description: 'Returns the current resource usage for the specified server. This endpoint utilizes a caching mechanism, updates can take up to 20 seconds to reflect. For real-time statistics, you should connect to the server''s websocket and listen to the "stats" event.'
       tags:
         - Server
   '/servers/{server}/command':
@@ -2023,9 +2023,12 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 191
+                description:
+                  type: string
               required:
                 - name
-      description: Renames a server in the Panel.
+        description: ''
+      description: Renames a server and (optionally) its description.
   '/servers/{server}/settings/reinstall':
     parameters:
       - $ref: '#/components/parameters/server'
