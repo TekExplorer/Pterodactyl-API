@@ -2161,7 +2161,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
@@ -2191,7 +2191,7 @@ paths:
                       url:
                         type: string
       operationId: server-download-backup
-      description: Returns an endpoint to download a backup.
+      description: 'Returns a signed download URL for the backup. The URL can be requested directly to get a download response with the backup contents. This can either be a Wings download URL or an S3 storage URL depending on the storage driver being used. Wings download URLs are valid for 15 minutes, whereas S3 storage URLs are valid for 5 minutes.'
   '/servers/{server}/backups/{backup}/lock':
     parameters:
       - name: server
@@ -2200,7 +2200,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
@@ -2217,7 +2217,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/backup'
-      description: Toggles the `is_locked` status of a backup.
+      description: Toggles the locked state of a backup.
       tags:
         - Server Backups
   '/servers/{server}/backups/{backup}/restore':
@@ -2228,13 +2228,13 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
         in: path
         required: true
-        description: The UUID of the backup being requested.
+        description: The UUID of the backup to restore.
     post:
       summary: Restore Backup
       operationId: server-restore-backup
@@ -2243,9 +2243,20 @@ paths:
           description: No Content
         '400':
           description: 'A `400: Bad Request` response is returned if the backup is not currently completed (or has failed), or when a server is currently installing, transferring, or restoring from a different backup.'
-      description: Restores a backup for a server. This will overwrite any existing files while running.
+      description: 'Restores a backup for a server. If specified, the existing files in the server will be truncated (or purged) before the backup is restored.'
       tags:
         - Server Backups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                truncate:
+                  type: boolean
+                  description: Whether the existing files should be truncated.
+              required:
+                - truncate
   '/servers/{server}/files/list':
     parameters:
       - $ref: '#/components/parameters/server'
