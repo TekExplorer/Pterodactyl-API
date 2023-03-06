@@ -1725,7 +1725,8 @@ paths:
                   signal: stop
               properties:
                 signal:
-                  $ref: '#/components/schemas/signal'
+                  type: string
+                  enum: [start, stop, restart, kill]
               required:
                 - signal
       tags:
@@ -3359,17 +3360,7 @@ components:
         url:
           type: string
           format: uri
-      title: Signed Url
-    signal:
-      title: signal
-      x-stoplight:
-        id: 81hwep8u472uh
-      type: string
-      enum:
-        - start
-        - stop
-        - restart
-        - kill
+      title: Signed URL
   securitySchemes:
     BearerAuth:
       type: http
