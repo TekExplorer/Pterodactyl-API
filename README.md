@@ -14,5 +14,14 @@ and are additional documentation for, for example, the WebSocket API.
 Currently there is one article:
 - [WebSocket API](./docs/Server-Websockets.md)
 
+# Libraries
+This list includes libraries that help developers interact with the Pterodactyl API. \
+More entries will be added soon.
+
+Kotlin/Java:
+- **KOTLIN ONLY, uses Coroutines** [pterodactyl-kt](https://github.com/TeamGloryx/pterodactyl-kt)
+Dart:
+- The library by the one and only, TekExplorer - [`dartactyl`](https://github.com/TekExplorer/dartactyl)
+
 # Contributing
 This repository's OpenAPI spec and articles are edited using [Stoplight Studio](https://stoplight.io/studio).
