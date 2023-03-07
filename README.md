@@ -15,11 +15,8 @@ Currently there is one article:
 - [WebSocket API](./docs/Server-Websockets.md)
 
 # Libraries
-This list includes libraries that help developers interact with the Pterodactyl API. \
+This list includes libraries that help developers interact with the Pterodactyl API without directly doing HTTP requests / holding a websocket. \
 More entries will be added soon.
-
-Kotlin/Java:
-- **KOTLIN ONLY, uses Coroutines** [pterodactyl-kt](https://github.com/TeamGloryx/pterodactyl-kt)
 
 Dart:
 - The library by the one and only, TekExplorer - [`dartactyl`](https://github.com/TekExplorer/dartactyl)
