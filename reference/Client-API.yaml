@@ -1726,11 +1726,7 @@ paths:
               properties:
                 signal:
                   type: string
-                  enum:
-                    - start
-                    - stop
-                    - restart
-                    - kill
+                  enum: [start, stop, restart, kill]
               required:
                 - signal
       tags:
@@ -3364,7 +3360,7 @@ components:
         url:
           type: string
           format: uri
-      title: Signed Url
+      title: Signed URL
   securitySchemes:
     BearerAuth:
       type: http
