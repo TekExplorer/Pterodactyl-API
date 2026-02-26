@@ -1,0 +1,3 @@
+# Store OpenAPI spec files verbatim (CRLF), matching upstream Stoplight editor output.
+# -text disables all line-ending normalisation so CRLF bytes are preserved in the blob.
+reference/*.yaml -text

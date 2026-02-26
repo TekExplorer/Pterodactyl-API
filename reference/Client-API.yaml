@@ -11,11 +11,17 @@ info:
     url: 'https://pterodactyl.io'
     email: dane@pterodactyl.io
   summary: Client API
+  x-pterodactyl-panel-version: v1.12.1
+  x-pterodactyl-source:
+    routes: 'https://github.com/pterodactyl/panel/blob/v1.12.1/routes/api-client.php'
+    serializer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Extensions/League/Fractal/Serializers/PterodactylSerializer.php'
 servers:
   - url: 'https://pterodactyl.test/api/client'
     description: Client API
 paths:
   /:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ClientController.php'
     get:
       summary: Get Servers
       responses:
@@ -244,7 +250,16 @@ paths:
           name: type
           description: Determines which servers to return. If not specified all servers you have access to as an owner or subuser are returned.
           style: form
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - egg
+              - subusers
+          description: 'Comma-delimited list of relationships to include. Allowed: `egg`, `subusers`.'
+          style: form
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
         - schema:
@@ -273,6 +288,8 @@ paths:
           description: Allows filtering of the results before they are returned.
     parameters: []
   /permissions:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ClientController.php'
     get:
       summary: List Permissions
       responses:
@@ -622,6 +639,8 @@ paths:
       description: Returns all of the permissions on the Panel instance.
       x-internal: false
   /account:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     get:
       summary: Get Account Details
       operationId: get-account
@@ -697,6 +716,8 @@ paths:
       tags:
         - Account
   /account/two-factor:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/TwoFactorController.php'
     get:
       summary: Setup 2FA
       responses:
@@ -837,6 +858,8 @@ paths:
       tags:
         - Account
   /account/email:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     put:
       summary: Change Email
       operationId: put-email
@@ -873,6 +896,8 @@ paths:
         - Account
     parameters: []
   /account/password:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     put:
       summary: Change Password
       operationId: put-password
@@ -912,6 +937,8 @@ paths:
         - Account
     parameters: []
   /account/api-keys:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ApiKeyController.php'
     get:
       summary: Get API Keys
       responses:
@@ -1054,6 +1081,8 @@ paths:
       tags:
         - Account
   '/account/api-keys/{identifier}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ApiKeyController.php'
     parameters:
       - $ref: '#/components/parameters/api-key'
     delete:
@@ -1066,6 +1095,8 @@ paths:
       tags:
         - Account
   /account/ssh-keys:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/SSHKeyController.php'
     get:
       summary: Get SSH Keys
       operationId: get-account-ssh-keys
@@ -1191,7 +1222,96 @@ paths:
       tags:
         - Account
       description: Adds an SSH key to the user's account.
+  /account/activity:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ActivityLogController.php'
+    get:
+      summary: Get Account Activity Logs
+      operationId: get-account-activity
+      description: Returns a paginated list of activity log entries for the authenticated user's account.
+      parameters:
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - actor
+          description: 'Comma-delimited list of relationships to include. Allowed: `actor`.'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - name: filter[event]
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter activity logs by event name (partial match).
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - timestamp
+              - '-timestamp'
+          description: Sort order for results.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - activity_log
+                        attributes:
+                          $ref: '#/components/schemas/activity-log'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/pagination'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: activity_log
+                        attributes:
+                          id: a1b2c3d4e5f6
+                          batch: null
+                          event: 'user:api-key.create'
+                          is_api: false
+                          ip: '127.0.0.1'
+                          description: null
+                          properties: {}
+                          has_additional_metadata: false
+                          timestamp: '2022-07-24T20:52:08+00:00'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 25
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+      tags:
+        - Account
   /account/ssh-keys/remove:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/SSHKeyController.php'
     parameters: []
     post:
       summary: Remove SSH Key
@@ -1214,6 +1334,8 @@ paths:
       tags:
         - Account
   '/servers/{server}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ServerController.php'
     get:
       summary: Get Server Details
       responses:
@@ -1397,12 +1519,22 @@ paths:
       operationId: get-server-details
       description: Returns details about a specific server.
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - egg
+              - subusers
+          description: 'Comma-delimited list of relationships to include. Allowed: `egg`, `subusers`.'
       tags:
         - Server
     parameters:
       - $ref: '#/components/parameters/server'
   '/servers/{server}/websocket':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/WebsocketController.php'
     get:
       summary: Get Server Websocket
       responses:
@@ -1584,6 +1716,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/server'
   '/servers/{server}/resources':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ResourceUtilizationController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -1660,6 +1794,8 @@ paths:
       tags:
         - Server
   '/servers/{server}/command':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/CommandController.php'
     parameters:
       - name: server
         in: path
@@ -1700,6 +1836,8 @@ paths:
       tags:
         - Server
   '/servers/{server}/power':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/PowerController.php'
     parameters:
       - name: server
         in: path
@@ -1731,7 +1869,99 @@ paths:
                 - signal
       tags:
         - Server
+  '/servers/{server}/activity':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ActivityLogController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get Server Activity Logs
+      operationId: get-server-activity
+      description: Returns a paginated list of activity log entries for the given server.
+      parameters:
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - actor
+          description: 'Comma-delimited list of relationships to include. Allowed: `actor`.'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - name: filter[event]
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter activity logs by event name (partial match).
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - timestamp
+              - '-timestamp'
+          description: Sort order for results.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - activity_log
+                        attributes:
+                          $ref: '#/components/schemas/activity-log'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/pagination'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: activity_log
+                        attributes:
+                          id: a1b2c3d4e5f6
+                          batch: null
+                          event: 'server:file.write'
+                          is_api: false
+                          ip: '127.0.0.1'
+                          description: null
+                          properties:
+                            file: '/config.yml'
+                          has_additional_metadata: false
+                          timestamp: '2022-07-24T20:52:08+00:00'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 25
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+      tags:
+        - Server Activity
   '/servers/{server}/databases':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -1790,7 +2020,14 @@ paths:
                           max_connections: 0
       operationId: get-server-databases
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - password
+          description: 'Comma-delimited list of relationships to include. Allowed: `password`.'
       description: Returns all of the databases that exist for the server.
       tags:
         - Server Databases
@@ -1847,6 +2084,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/databases/{database}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/database'
@@ -1860,6 +2099,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/databases/{database}/rotate-password':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/database'
@@ -1901,6 +2142,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/startup':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/StartupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -1948,6 +2191,8 @@ paths:
       operationId: get-servers-server-startup
       description: Returns the startup command and variables for a server.
   '/servers/{server}/startup/variable':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/StartupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     put:
@@ -1999,6 +2244,8 @@ paths:
                 - key
                 - value
   '/servers/{server}/settings/rename':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2026,6 +2273,8 @@ paths:
         description: ''
       description: Renames a server and (optionally) its description.
   '/servers/{server}/settings/reinstall':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2038,6 +2287,8 @@ paths:
       operationId: reinstall-server
       description: Triggers a reinstallation of the server.
   '/servers/{server}/settings/docker-image':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - name: server
         in: path
@@ -2067,6 +2318,8 @@ paths:
               required:
                 - docker_image
   '/servers/{server}/backups':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2122,6 +2375,8 @@ paths:
                   items:
                     type: string
   '/servers/{server}/backups/{backup}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - schema:
@@ -2153,6 +2408,8 @@ paths:
       operationId: delete-servers-server-backups-backup
       description: 'Deletes a backup for a server, even if the backup has `is_locked` set to `true`.'
   '/servers/{server}/backups/{backup}/download':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2192,6 +2449,8 @@ paths:
       operationId: server-download-backup
       description: 'Returns a signed download URL for the backup. The URL can be requested directly to get a download response with the backup contents. This can either be a Wings download URL or an S3 storage URL depending on the storage driver being used. Wings download URLs are valid for 15 minutes, whereas S3 storage URLs are valid for 5 minutes.'
   '/servers/{server}/backups/{backup}/lock':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2220,6 +2479,8 @@ paths:
       tags:
         - Server Backups
   '/servers/{server}/backups/{backup}/restore':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2257,6 +2518,8 @@ paths:
               required:
                 - truncate
   '/servers/{server}/files/list':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2432,6 +2695,8 @@ paths:
           description: The target directory to get files from
       description: 'Returns a list of file objects for a given directory. You do NOT need to include "/home/container" in the directory query parameter. If no directory is specified, the root directory (`/home/container`) is used.'
   '/servers/{server}/files/contents':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2459,6 +2724,8 @@ paths:
         - $ref: '#/components/parameters/file'
       description: Get the raw contents of a file.
   '/servers/{server}/files/download':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2497,8 +2764,10 @@ paths:
       operationId: get-server-file-download
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Returns a signed download URL for a file. This URL can be requested directly to get a download response with the file contents. This URL is only valid for 15 minutes.
+      description: 'Returns a signed download URL for a file. This URL can be requested directly to get a download response with the file contents. This URL is only valid for 15 minutes.'
   '/servers/{server}/files/rename':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2552,6 +2821,8 @@ paths:
                       to: demos/demo1.txt
         description: 'Relative to the "root", rename files'
   '/servers/{server}/files/copy':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2588,6 +2859,8 @@ paths:
                   location: test.txt
         description: Copy a file at the given path
   '/servers/{server}/files/write':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2620,6 +2893,8 @@ paths:
                 value: eula=true
         description: Write to file
   '/servers/{server}/files/pull':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - schema:
           type: string
@@ -2667,6 +2942,8 @@ paths:
       tags:
         - Server Files
   '/servers/{server}/files/chmod':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - schema:
           type: string
@@ -2721,9 +2998,895 @@ paths:
                     - file: blank.png
                       mode: 777
         description: Contains information about the root directory and files to update permission of.
+  '/servers/{server}/files/compress':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Compress Files
+      operationId: post-servers-server-files-compress
+      description: Compresses one or more files or directories in the given root directory into a single archive file.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to compress files from. Defaults to '/'.
+                files:
+                  type: array
+                  description: An array of file/directory names to compress.
+                  items:
+                    type: string
+              required:
+                - files
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  files:
+                    - server.jar
+                    - world/
+        description: Contains information about the root directory and files to compress.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - file_object
+                  attributes:
+                    $ref: '#/components/schemas/file-object'
+              examples:
+                example:
+                  value:
+                    object: file_object
+                    attributes:
+                      name: archive-2022-07-24T205208.tar.gz
+                      mode: '-rw-r--r--'
+                      mode_bits: '644'
+                      size: 1048576
+                      is_file: true
+                      is_symlink: false
+                      mimetype: application/x-tar
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      modified_at: '2022-07-24T20:52:08+00:00'
+  '/servers/{server}/files/decompress':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Decompress File
+      operationId: post-servers-server-files-decompress
+      description: Decompresses a given archive file in the specified root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to decompress into. Defaults to '/'.
+                file:
+                  type: string
+                  description: The name of the archive file to decompress.
+              required:
+                - file
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  file: archive-2022-07-24T205208.tar.gz
+        description: Contains information about the root directory and file to decompress.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/delete':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Delete Files
+      operationId: post-servers-server-files-delete
+      description: Deletes one or more files or directories in the given root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory. Uses '/' if no directory is provided.
+                files:
+                  type: array
+                  description: An array of file/directory names to delete.
+                  items:
+                    type: string
+              required:
+                - files
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  files:
+                    - old-world/
+                    - debug.log
+        description: Contains information about the root directory and files to delete.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/create-folder':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Create Folder
+      operationId: post-servers-server-files-create-folder
+      description: Creates a new directory on the server in the given root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to create the new folder inside. Defaults to '/'.
+                name:
+                  type: string
+                  description: The name of the new folder.
+              required:
+                - name
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  name: plugins
+        description: Contains information about where to create the folder.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/upload':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileUploadController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get File Upload URL
+      operationId: get-servers-server-files-upload
+      description: Returns a signed URL that can be used to upload files to the server via the Wings daemon. The URL expires after 15 minutes.
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - signed_url
+                  attributes:
+                    $ref: '#/components/schemas/signed-url'
+              examples:
+                example:
+                  value:
+                    object: signed_url
+                    attributes:
+                      url: 'https://wings.example.com:443/upload/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
+  '/servers/{server}/schedules':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Schedules
+      operationId: get-servers-server-schedules
+      description: Returns all of the schedules belonging to the given server.
+      tags:
+        - Server Schedules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - schedule
+                        attributes:
+                          $ref: '#/components/schemas/schedule'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: schedule
+                        attributes:
+                          id: 1
+                          name: Restart Server
+                          cron:
+                            day_of_week: '*'
+                            day_of_month: '*'
+                            month: '*'
+                            hour: '0'
+                            minute: '0'
+                          is_active: true
+                          is_processing: false
+                          only_when_online: false
+                          last_run_at: null
+                          next_run_at: '2022-07-25T00:00:00+00:00'
+                          created_at: '2022-07-24T20:52:08+00:00'
+                          updated_at: '2022-07-24T20:52:08+00:00'
+                          relationships:
+                            tasks:
+                              object: list
+                              data: []
+    post:
+      summary: Create Server Schedule
+      operationId: post-servers-server-schedules
+      description: Creates a new schedule for the server.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of this schedule.
+                minute:
+                  type: string
+                  description: Cron expression for the minute.
+                hour:
+                  type: string
+                  description: Cron expression for the hour.
+                day_of_month:
+                  type: string
+                  description: Cron expression for the day of month.
+                month:
+                  type: string
+                  description: Cron expression for the month.
+                day_of_week:
+                  type: string
+                  description: Cron expression for the day of week.
+                is_active:
+                  type: boolean
+                  description: Whether this schedule is currently active.
+                only_when_online:
+                  type: boolean
+                  description: If true, the schedule will only run when the server is online.
+              required:
+                - name
+                - minute
+                - hour
+                - day_of_month
+                - month
+                - day_of_week
+            examples:
+              Example 1:
+                value:
+                  name: Restart Server
+                  minute: '0'
+                  hour: '0'
+                  day_of_month: '*'
+                  month: '*'
+                  day_of_week: '*'
+                  is_active: true
+                  only_when_online: false
+        description: Schedule configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+  '/servers/{server}/schedules/{schedule}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    get:
+      summary: Get Server Schedule
+      operationId: get-servers-server-schedules-schedule
+      description: Returns the given schedule for the server along with its tasks.
+      tags:
+        - Server Schedules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+    post:
+      summary: Update Server Schedule
+      operationId: post-servers-server-schedules-schedule
+      description: Updates the given schedule for the server.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of this schedule.
+                minute:
+                  type: string
+                  description: Cron expression for the minute.
+                hour:
+                  type: string
+                  description: Cron expression for the hour.
+                day_of_month:
+                  type: string
+                  description: Cron expression for the day of month.
+                month:
+                  type: string
+                  description: Cron expression for the month.
+                day_of_week:
+                  type: string
+                  description: Cron expression for the day of week.
+                is_active:
+                  type: boolean
+                  description: Whether this schedule is currently active.
+                only_when_online:
+                  type: boolean
+                  description: If true, the schedule will only run when the server is online.
+              required:
+                - name
+                - minute
+                - hour
+                - day_of_month
+                - month
+                - day_of_week
+        description: Schedule configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+    delete:
+      summary: Delete Server Schedule
+      operationId: delete-servers-server-schedules-schedule
+      description: Deletes the given schedule and all of its associated tasks.
+      tags:
+        - Server Schedules
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/schedules/{schedule}/execute':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    post:
+      summary: Execute Schedule
+      operationId: post-servers-server-schedules-schedule-execute
+      description: Executes the given schedule immediately, regardless of its active state.
+      tags:
+        - Server Schedules
+      responses:
+        '202':
+          description: Accepted
+  '/servers/{server}/schedules/{schedule}/tasks':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleTaskController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    post:
+      summary: Create Schedule Task
+      operationId: post-servers-server-schedules-schedule-tasks
+      description: Creates a new task for the given schedule.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: The action to perform.
+                  enum:
+                    - command
+                    - power
+                    - backup
+                payload:
+                  type: string
+                  description: The payload for the action (e.g. the command string, or a power action like 'restart').
+                time_offset:
+                  type: integer
+                  description: How many seconds to wait after the previous task completes before running this task.
+                  minimum: 0
+                continue_on_failure:
+                  type: boolean
+                  description: If true, the schedule will continue running subsequent tasks even if this task fails.
+                sequence_id:
+                  type: integer
+                  description: The sequence position for this task. If omitted, the task is appended.
+                  minimum: 1
+              required:
+                - action
+                - time_offset
+            examples:
+              Example 1:
+                value:
+                  action: command
+                  payload: 'say Server restarting in 10 seconds!'
+                  time_offset: 0
+                  continue_on_failure: false
+        description: Task configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule_task
+                  attributes:
+                    $ref: '#/components/schemas/task'
+  '/servers/{server}/schedules/{schedule}/tasks/{task}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleTaskController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+      - $ref: '#/components/parameters/task'
+    post:
+      summary: Update Schedule Task
+      operationId: post-servers-server-schedules-schedule-tasks-task
+      description: Updates the given task for a schedule.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: The action to perform.
+                  enum:
+                    - command
+                    - power
+                    - backup
+                payload:
+                  type: string
+                  description: The payload for the action.
+                time_offset:
+                  type: integer
+                  description: How many seconds to wait after the previous task completes before running this task.
+                  minimum: 0
+                continue_on_failure:
+                  type: boolean
+                  description: If true, the schedule will continue running subsequent tasks even if this task fails.
+                sequence_id:
+                  type: integer
+                  description: The new sequence position for this task.
+                  minimum: 1
+              required:
+                - action
+                - time_offset
+        description: Task configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule_task
+                  attributes:
+                    $ref: '#/components/schemas/task'
+    delete:
+      summary: Delete Schedule Task
+      operationId: delete-servers-server-schedules-schedule-tasks-task
+      description: Deletes the given task from a schedule.
+      tags:
+        - Server Schedules
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/network/allocations':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Allocations
+      operationId: get-servers-server-network-allocations
+      description: Returns all of the allocations assigned to the given server, including the primary allocation.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - allocation
+                        attributes:
+                          $ref: '#/components/schemas/allocation'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: allocation
+                        attributes:
+                          id: 1
+                          ip: '0.0.0.0'
+                          ip_alias: null
+                          port: 25565
+                          notes: null
+                          is_default: true
+    post:
+      summary: Assign New Allocation
+      operationId: post-servers-server-network-allocations
+      description: Automatically assigns a new allocation from the node's available pool to the server. Requires the server to have an allocation limit set.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+  '/servers/{server}/network/allocations/{allocation}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/allocation'
+    post:
+      summary: Update Allocation Notes
+      operationId: post-servers-server-network-allocations-allocation
+      description: Updates the notes for the given allocation.
+      tags:
+        - Server Network
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type:
+                    - string
+                    - 'null'
+                  description: Notes for this allocation. Set to null to clear.
+            examples:
+              Example 1:
+                value:
+                  notes: 'Game server port'
+        description: Allocation notes.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+    delete:
+      summary: Delete Allocation
+      operationId: delete-servers-server-network-allocations-allocation
+      description: Deletes the given allocation from the server. Cannot delete the primary allocation. Requires the server to have an allocation limit set.
+      tags:
+        - Server Network
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/network/allocations/{allocation}/primary':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/allocation'
+    post:
+      summary: Set Primary Allocation
+      operationId: post-servers-server-network-allocations-allocation-primary
+      description: Sets the given allocation as the primary allocation for the server.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+  '/servers/{server}/users':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Subusers
+      operationId: get-servers-server-users
+      description: Returns all of the subusers (non-owner users) for the given server.
+      tags:
+        - Server Subusers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - subuser
+                        attributes:
+                          $ref: '#/components/schemas/subuser'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: subuser
+                        attributes:
+                          uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+                          username: janedoe
+                          email: jane@example.com
+                          image: 'https://gravatar.com/avatar/abc123'
+                          2fa_enabled: false
+                          created_at: '2022-07-24T20:52:08+00:00'
+                          permissions:
+                            - 'websocket.connect'
+                            - 'control.console'
+    post:
+      summary: Create Server Subuser
+      operationId: post-servers-server-users
+      description: Creates a new subuser for the server. If the user does not exist a new account will be created.
+      tags:
+        - Server Subusers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user to add as a subuser.
+                permissions:
+                  type: array
+                  description: An array of permission strings to assign to the subuser.
+                  items:
+                    type: string
+              required:
+                - email
+                - permissions
+            examples:
+              Example 1:
+                value:
+                  email: jane@example.com
+                  permissions:
+                    - 'websocket.connect'
+                    - 'control.console'
+        description: Subuser configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+  '/servers/{server}/users/{user}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/user'
+    get:
+      summary: Get Server Subuser
+      operationId: get-servers-server-users-user
+      description: Returns a single subuser for the given server.
+      tags:
+        - Server Subusers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+    post:
+      summary: Update Server Subuser
+      operationId: post-servers-server-users-user
+      description: Updates the permissions for the given subuser on the server.
+      tags:
+        - Server Subusers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  description: An array of permission strings to assign to the subuser.
+                  items:
+                    type: string
+              required:
+                - permissions
+            examples:
+              Example 1:
+                value:
+                  permissions:
+                    - 'websocket.connect'
+                    - 'control.console'
+                    - 'control.start'
+        description: Updated subuser permissions.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+    delete:
+      summary: Delete Server Subuser
+      operationId: delete-servers-server-users-user
+      description: Removes the given subuser from the server.
+      tags:
+        - Server Subusers
+      responses:
+        '204':
+          description: No Content
 components:
   schemas:
     allocation:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/AllocationTransformer.php'
       description: ''
       type: object
       x-examples:
@@ -2762,6 +3925,8 @@ components:
         is_default:
           type: boolean
     egg-variable:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/EggVariableTransformer.php'
       description: An egg variable represents a single configuration value for an `Egg` model on the Panel.
       type: object
       x-examples:
@@ -2805,6 +3970,8 @@ components:
           type: string
           description: Validation rules that are applied to the field value.
     server:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ServerTransformer.php'
       description: ''
       type: object
       x-examples:
@@ -3023,14 +4190,16 @@ components:
           type: boolean
         relationships:
           type: object
-          description: Relationships are generally only included when requested using the `include` parameter on a request.
+          description: '`allocations` and `variables` are always present in the response (default includes). `egg` and `subusers` are only present when explicitly requested using the `include` parameter.'
           properties:
             allocations:
               type: object
-              description: The allocations assigned to this server
+              description: The allocations assigned to this server. Always present in the response.
               properties:
                 object:
                   type: string
+                  enum:
+                    - list
                 data:
                   type: array
                   items:
@@ -3038,30 +4207,40 @@ components:
                     properties:
                       object:
                         type: string
+                        enum:
+                          - allocation
                       attributes:
                         $ref: '#/components/schemas/allocation'
             variables:
-              type: object
-              description: The egg variables for this server
-              properties:
-                object:
-                  type: string
-                data:
-                  type: array
-                  uniqueItems: true
-                  items:
-                    type: object
-                    properties:
-                      object:
-                        type: string
-                      attributes:
-                        $ref: '#/components/schemas/egg-variable'
+              description: 'The egg variables for this server. Always present in the response, but returns a null_resource object if the user lacks startup read permission.'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - list
+                    data:
+                      type: array
+                      uniqueItems: true
+                      items:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                            enum:
+                              - egg_variable
+                          attributes:
+                            $ref: '#/components/schemas/egg-variable'
+                - $ref: '#/components/schemas/null_resource'
             egg:
               type: object
-              description: The egg this server is using. shows on include=egg
+              description: The egg this server is using. Present when `include=egg` is requested.
               properties:
                 object:
                   type: string
+                  enum:
+                    - egg
                 attributes:
                   type: object
                   properties:
@@ -3070,16 +4249,29 @@ components:
                     name:
                       type: string
             subusers:
-              type: object
-              description: TODO. The subusers on this server. Shows on include=subusers.
-              properties:
-                object:
-                  type: string
-                data:
-                  type: array
-                  items:
-                    type: object
+              description: 'The subusers on this server. Present when `include=subusers` is requested. Returns a null_resource object if the user lacks user read permission.'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - list
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                            enum:
+                              - subuser
+                          attributes:
+                            $ref: '#/components/schemas/subuser'
+                - $ref: '#/components/schemas/null_resource'
     api-key:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ApiKeyTransformer.php'
       type: object
       x-examples:
         example-1:
@@ -3113,6 +4305,8 @@ components:
           type: string
           format: date-time
     server-database:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/DatabaseTransformer.php'
       type: object
       properties:
         id:
@@ -3133,18 +4327,26 @@ components:
         max_connections:
           type: integer
         relationships:
-          type: object
+          type:
+            - object
+            - 'null'
+          description: 'Only present when the `include` parameter is used. Absent from the response if no includes were requested.'
           properties:
             password:
-              type: object
-              properties:
-                object:
-                  type: string
-                attributes:
-                  type: object
+              description: 'The database password. Present when `include=password` is requested. Returns a null_resource object if the user lacks database password view permission.'
+              oneOf:
+                - type: object
                   properties:
-                    password:
+                    object:
                       type: string
+                      enum:
+                        - database_password
+                    attributes:
+                      type: object
+                      properties:
+                        password:
+                          type: string
+                - $ref: '#/components/schemas/null_resource'
       x-examples:
         example-1:
           id: string
@@ -3186,6 +4388,8 @@ components:
       x-stoplight:
         id: 32fc0018c8117
     file-object:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/FileObjectTransformer.php'
       type: object
       x-examples:
         example-1:
@@ -3313,6 +4517,8 @@ components:
       description: A pagination model represents a paginated set of data returned by the API. This can be used to determine how many additional requests are needed to load in all of the data.
       title: Pagination
     backup:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/BackupTransformer.php'
       title: Backup
       x-stoplight:
         id: qjsiassol76mo
@@ -3377,6 +4583,319 @@ components:
           type: string
           format: uri
       title: Signed URL
+    activity-log:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ActivityLogTransformer.php'
+      title: Activity Log
+      type: object
+      description: Represents a single activity log entry for a user or server action.
+      properties:
+        id:
+          type: string
+          description: A SHA1 hash used as a unique identifier for this log entry on the front-end.
+        batch:
+          type:
+            - string
+            - 'null'
+          description: A UUID that groups related activity log entries together.
+          format: uuid
+        event:
+          type: string
+          description: The event name describing what action was performed.
+          example: 'server:file.write'
+        is_api:
+          type: boolean
+          description: Whether the action was performed via an API key (rather than a browser session).
+        ip:
+          type:
+            - string
+            - 'null'
+          description: The IP address of the actor. May be hidden for privacy.
+        description:
+          type:
+            - string
+            - 'null'
+          description: An optional description for the log entry.
+        properties:
+          type: object
+          description: Key-value pairs describing additional metadata about the event.
+        has_additional_metadata:
+          type: boolean
+          description: Whether there are additional metadata properties not exposed in the event description string.
+        timestamp:
+          type: string
+          format: date-time
+          description: The ISO 8601 timestamp when the activity occurred.
+        relationships:
+          type:
+            - object
+            - 'null'
+          description: 'Only present when the `include` parameter is used. Absent from the response if no includes were requested.'
+          properties:
+            actor:
+              description: 'The user who performed the action. Present when `include=actor` is requested. Returns a null_resource object if the actor is not a user account (e.g. system actions).'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - user
+                    attributes:
+                      $ref: '#/components/schemas/user'
+                - $ref: '#/components/schemas/null_resource'
+      examples:
+        - id: a1b2c3d4e5f6
+          batch: null
+          event: 'server:file.write'
+          is_api: false
+          ip: '127.0.0.1'
+          description: null
+          properties:
+            file: '/config.yml'
+          has_additional_metadata: false
+          timestamp: '2022-07-24T20:52:08+00:00'
+    schedule:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ScheduleTransformer.php'
+      title: Schedule
+      type: object
+      description: Represents a scheduled task for a server.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for this schedule.
+        name:
+          type: string
+          description: The name of the schedule.
+        cron:
+          type: object
+          description: The cron expression values for the schedule.
+          properties:
+            day_of_week:
+              type: string
+            day_of_month:
+              type: string
+            month:
+              type: string
+            hour:
+              type: string
+            minute:
+              type: string
+        is_active:
+          type: boolean
+          description: Whether this schedule is currently active and will run at the specified time.
+        is_processing:
+          type: boolean
+          description: Whether this schedule is currently being processed.
+        only_when_online:
+          type: boolean
+          description: If true, this schedule only runs when the server is in an online state.
+        last_run_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The timestamp when this schedule last ran. Null if it has never run.
+        next_run_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The timestamp when this schedule will next run.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        relationships:
+          type: object
+          description: '`tasks` is always present in the response (default include).'
+          properties:
+            tasks:
+              type: object
+              description: The tasks associated with this schedule. Always present in the response.
+              properties:
+                object:
+                  type: string
+                  enum:
+                    - list
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                        enum:
+                          - schedule_task
+                      attributes:
+                        $ref: '#/components/schemas/task'
+      examples:
+        - id: 1
+          name: Restart Server
+          cron:
+            day_of_week: '*'
+            day_of_month: '*'
+            month: '*'
+            hour: '0'
+            minute: '0'
+          is_active: true
+          is_processing: false
+          only_when_online: false
+          last_run_at: null
+          next_run_at: '2022-07-25T00:00:00+00:00'
+          created_at: '2022-07-24T20:52:08+00:00'
+          updated_at: '2022-07-24T20:52:08+00:00'
+          relationships:
+            tasks:
+              object: list
+              data: []
+    task:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/TaskTransformer.php'
+      title: Schedule Task
+      type: object
+      description: Represents a single task within a server schedule.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for this task.
+        sequence_id:
+          type: integer
+          description: The order in which this task runs within the schedule.
+        action:
+          type: string
+          description: The action this task will perform.
+          enum:
+            - command
+            - power
+            - backup
+        payload:
+          type: string
+          description: The payload for the action (e.g. the command string, power action, or empty for backup).
+        time_offset:
+          type: integer
+          description: How many seconds to wait after the previous task completes before running this task.
+        is_queued:
+          type: boolean
+          description: Whether this task is currently queued for execution.
+        continue_on_failure:
+          type: boolean
+          description: If true, subsequent tasks will continue even if this task fails.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      examples:
+        - id: 1
+          sequence_id: 1
+          action: command
+          payload: 'say Server restarting in 10 seconds!'
+          time_offset: 0
+          is_queued: false
+          continue_on_failure: false
+          created_at: '2022-07-24T20:52:08+00:00'
+          updated_at: '2022-07-24T20:52:08+00:00'
+    user:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/UserTransformer.php'
+      title: User
+      type: object
+      description: Represents a Panel user account.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the user.
+        username:
+          type: string
+          description: The username of the user.
+        email:
+          type: string
+          format: email
+          description: The email address of the user.
+        image:
+          type: string
+          format: uri
+          description: The Gravatar URL for this user.
+        2fa_enabled:
+          type: boolean
+          description: Whether this user has two-factor authentication enabled.
+        created_at:
+          type: string
+          format: date-time
+          description: When the user account was created.
+      examples:
+        - uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+          username: janedoe
+          email: jane@example.com
+          image: 'https://gravatar.com/avatar/abc123'
+          2fa_enabled: false
+          created_at: '2022-07-24T20:52:08+00:00'
+    subuser:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/SubuserTransformer.php'
+      title: Subuser
+      type: object
+      description: Represents a non-owner user who has been granted access to a server. The response is a combination of a user object and the subuser's permissions.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the user.
+        username:
+          type: string
+          description: The username of the user.
+        email:
+          type: string
+          format: email
+          description: The email address of the user.
+        image:
+          type: string
+          format: uri
+          description: The Gravatar URL for this user.
+        2fa_enabled:
+          type: boolean
+          description: Whether this user has two-factor authentication enabled.
+        created_at:
+          type: string
+          format: date-time
+          description: When the user account was created.
+        permissions:
+          type: array
+          description: An array of permission strings assigned to this subuser for this server.
+          items:
+            type: string
+      examples:
+        - uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+          username: janedoe
+          email: jane@example.com
+          image: 'https://gravatar.com/avatar/abc123'
+          2fa_enabled: false
+          created_at: '2022-07-24T20:52:08+00:00'
+          permissions:
+            - 'websocket.connect'
+            - 'control.console'
+    null_resource:
+      x-pterodactyl-source:
+        serializer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Extensions/League/Fractal/Serializers/PterodactylSerializer.php'
+      title: Null Resource
+      type: object
+      description: 'Returned by the serializer when an include method returns a NullResource. This occurs when the requested relationship is not available or the user lacks permission to view it.'
+      properties:
+        object:
+          type: string
+          enum:
+            - null_resource
+        attributes:
+          type: 'null'
+      examples:
+        - object: null_resource
+          attributes: null
   securitySchemes:
     BearerAuth:
       type: http
@@ -3635,6 +5154,43 @@ components:
       schema:
         type: string
       description: the target file
+    backup:
+      name: backup
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The backup UUID.
+    schedule:
+      name: schedule
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the schedule.
+    task:
+      name: task
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the schedule task.
+    allocation:
+      name: allocation
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the allocation.
+    user:
+      name: user
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The UUID of the subuser.
   requestBodies: {}
 security:
   - BearerAuth: []
@@ -3643,9 +5199,17 @@ tags:
     description: Account Routes
   - name: Server
     description: Server Routes
+  - name: Server Activity
+    description: Server Activity Log Routes
   - name: Server Backups
     description: Server Backups Routes
   - name: Server Databases
     description: Server Databases Routes
   - name: Server Files
     description: Server Files Routes
+  - name: Server Schedules
+    description: Server Schedules Routes
+  - name: Server Network
+    description: Server Network Allocation Routes
+  - name: Server Subusers
+    description: Server Subuser Management Routes
