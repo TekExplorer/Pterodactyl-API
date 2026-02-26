@@ -2908,7 +2908,7 @@ paths:
       responses:
         '204':
           description: No Content
-      description: 'Downloads a file from an external source into the server. The source must be an absolute URL – redirects will not be followed.'
+      description: Downloads a file from an external source into the server. The source must be an absolute URL – redirects will not be followed.
       requestBody:
         content:
           application/json:
