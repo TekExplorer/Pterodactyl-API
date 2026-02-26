@@ -11,11 +11,17 @@ info:
     url: 'https://pterodactyl.io'
     email: dane@pterodactyl.io
   summary: Client API
+  x-pterodactyl-panel-version: v1.12.1
+  x-pterodactyl-source:
+    routes: 'https://github.com/pterodactyl/panel/blob/v1.12.1/routes/api-client.php'
+    serializer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Extensions/League/Fractal/Serializers/PterodactylSerializer.php'
 servers:
   - url: 'https://pterodactyl.test/api/client'
     description: Client API
 paths:
   /:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ClientController.php'
     get:
       summary: Get Servers
       responses:
@@ -282,6 +288,8 @@ paths:
           description: Allows filtering of the results before they are returned.
     parameters: []
   /permissions:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ClientController.php'
     get:
       summary: List Available Permissions
       responses:
@@ -631,6 +639,8 @@ paths:
       description: Returns all of the permissions available on the Panel instance.
       x-internal: false
   /account:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     get:
       summary: Get Account Details
       operationId: get-account
@@ -706,6 +716,8 @@ paths:
       tags:
         - Account
   /account/two-factor:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/TwoFactorController.php'
     get:
       summary: Setup 2FA
       responses:
@@ -846,6 +858,8 @@ paths:
       tags:
         - Account
   /account/email:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     put:
       summary: Change Email
       operationId: put-email
@@ -882,6 +896,8 @@ paths:
         - Account
     parameters: []
   /account/password:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/AccountController.php'
     put:
       summary: Change Password
       operationId: put-password
@@ -921,6 +937,8 @@ paths:
         - Account
     parameters: []
   /account/api-keys:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ApiKeyController.php'
     get:
       summary: Get API Keys
       responses:
@@ -1063,6 +1081,8 @@ paths:
       tags:
         - Account
   '/account/api-keys/{identifier}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ApiKeyController.php'
     parameters:
       - $ref: '#/components/parameters/api-key'
     delete:
@@ -1075,6 +1095,8 @@ paths:
       tags:
         - Account
   /account/ssh-keys:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/SSHKeyController.php'
     get:
       summary: Get SSH Keys
       operationId: get-account-ssh-keys
@@ -1201,6 +1223,8 @@ paths:
         - Account
       description: Adds an SSH key to the user's account.
   /account/activity:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/ActivityLogController.php'
     get:
       summary: Get Account Activity Logs
       operationId: get-account-activity
@@ -1286,6 +1310,8 @@ paths:
       tags:
         - Account
   /account/ssh-keys/remove:
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/SSHKeyController.php'
     parameters: []
     post:
       summary: Remove SSH Key
@@ -1308,6 +1334,8 @@ paths:
       tags:
         - Account
   '/servers/{server}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ServerController.php'
     get:
       summary: Get Server Details
       responses:
@@ -1505,6 +1533,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/server'
   '/servers/{server}/websocket':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/WebsocketController.php'
     get:
       summary: Get Server Websocket
       responses:
@@ -1686,6 +1716,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/server'
   '/servers/{server}/resources':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ResourceUtilizationController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -1762,6 +1794,8 @@ paths:
       tags:
         - Server
   '/servers/{server}/command':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/CommandController.php'
     parameters:
       - name: server
         in: path
@@ -1802,6 +1836,8 @@ paths:
       tags:
         - Server
   '/servers/{server}/power':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/PowerController.php'
     parameters:
       - name: server
         in: path
@@ -1834,6 +1870,8 @@ paths:
       tags:
         - Server
   '/servers/{server}/activity':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ActivityLogController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -1922,6 +1960,8 @@ paths:
       tags:
         - Server Activity
   '/servers/{server}/databases':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2044,6 +2084,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/databases/{database}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/database'
@@ -2057,6 +2099,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/databases/{database}/rotate-password':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/DatabaseController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/database'
@@ -2098,6 +2142,8 @@ paths:
       tags:
         - Server Databases
   '/servers/{server}/startup':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/StartupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2145,6 +2191,8 @@ paths:
       operationId: get-servers-server-startup
       description: Returns the startup command and variables for a server.
   '/servers/{server}/startup/variable':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/StartupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     put:
@@ -2196,6 +2244,8 @@ paths:
                 - key
                 - value
   '/servers/{server}/settings/rename':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2220,6 +2270,8 @@ paths:
                 - name
       description: Renames a server in the Panel.
   '/servers/{server}/settings/reinstall':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2232,6 +2284,8 @@ paths:
       operationId: reinstall-server
       description: Triggers a reinstallation of the server.
   '/servers/{server}/settings/docker-image':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
     parameters:
       - name: server
         in: path
@@ -2261,6 +2315,8 @@ paths:
               required:
                 - docker_image
   '/servers/{server}/backups':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2316,6 +2372,8 @@ paths:
                   items:
                     type: string
   '/servers/{server}/backups/{backup}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - schema:
@@ -2347,6 +2405,8 @@ paths:
       operationId: delete-servers-server-backups-backup
       description: 'Deletes a backup for a server, even if the backup has `is_locked` set to `true`.'
   '/servers/{server}/backups/{backup}/download':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2386,6 +2446,8 @@ paths:
       operationId: server-download-backup
       description: Returns an endpoint to download a backup.
   '/servers/{server}/backups/{backup}/lock':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2414,6 +2476,8 @@ paths:
       tags:
         - Server Backups
   '/servers/{server}/backups/{backup}/restore':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
     parameters:
       - name: server
         in: path
@@ -2440,6 +2504,8 @@ paths:
       tags:
         - Server Backups
   '/servers/{server}/files/list':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -2615,6 +2681,8 @@ paths:
           description: The target directory to get files from
       description: List all files in a given directory for a given server
   '/servers/{server}/files/contents':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2642,6 +2710,8 @@ paths:
         - $ref: '#/components/parameters/file'
       description: Get the raw contents of a file
   '/servers/{server}/files/download':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2682,6 +2752,8 @@ paths:
         - $ref: '#/components/parameters/file'
       description: Get a signed download link to the file
   '/servers/{server}/files/rename':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2735,6 +2807,8 @@ paths:
                       to: demos/demo1.txt
         description: 'Relative to the "root", rename files'
   '/servers/{server}/files/copy':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2771,6 +2845,8 @@ paths:
                   location: test.txt
         description: Copy a file at the given path
   '/servers/{server}/files/write':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - name: server
         in: path
@@ -2803,6 +2879,8 @@ paths:
                 value: eula=true
         description: Write to file
   '/servers/{server}/files/pull':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - schema:
           type: string
@@ -2849,6 +2927,8 @@ paths:
       tags:
         - Server Files
   '/servers/{server}/files/chmod':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - schema:
           type: string
@@ -2903,6 +2983,8 @@ paths:
                       mode: 777
         description: Contains information about the root directory and files to update permission of.
   '/servers/{server}/files/compress':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2964,6 +3046,8 @@ paths:
                       created_at: '2022-07-24T20:52:08+00:00'
                       modified_at: '2022-07-24T20:52:08+00:00'
   '/servers/{server}/files/decompress':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -2996,6 +3080,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/files/delete':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -3032,6 +3118,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/files/create-folder':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     post:
@@ -3064,6 +3152,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/files/upload':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileUploadController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -3093,6 +3183,8 @@ paths:
                     attributes:
                       url: 'https://wings.example.com:443/upload/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
   '/servers/{server}/schedules':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -3220,6 +3312,8 @@ paths:
                   attributes:
                     $ref: '#/components/schemas/schedule'
   '/servers/{server}/schedules/{schedule}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/schedule'
@@ -3311,6 +3405,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/schedules/{schedule}/execute':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/schedule'
@@ -3324,6 +3420,8 @@ paths:
         '202':
           description: Accepted
   '/servers/{server}/schedules/{schedule}/tasks':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleTaskController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/schedule'
@@ -3386,6 +3484,8 @@ paths:
                   attributes:
                     $ref: '#/components/schemas/task'
   '/servers/{server}/schedules/{schedule}/tasks/{task}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleTaskController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/schedule'
@@ -3451,6 +3551,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/network/allocations':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -3516,6 +3618,8 @@ paths:
                   attributes:
                     $ref: '#/components/schemas/allocation'
   '/servers/{server}/network/allocations/{allocation}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/allocation'
@@ -3565,6 +3669,8 @@ paths:
         '204':
           description: No Content
   '/servers/{server}/network/allocations/{allocation}/primary':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/allocation'
@@ -3589,6 +3695,8 @@ paths:
                   attributes:
                     $ref: '#/components/schemas/allocation'
   '/servers/{server}/users':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
     parameters:
       - $ref: '#/components/parameters/server'
     get:
@@ -3683,6 +3791,8 @@ paths:
                   attributes:
                     $ref: '#/components/schemas/subuser'
   '/servers/{server}/users/{user}':
+    x-pterodactyl-source:
+      controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
     parameters:
       - $ref: '#/components/parameters/server'
       - $ref: '#/components/parameters/user'
@@ -3759,6 +3869,8 @@ paths:
 components:
   schemas:
     allocation:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/AllocationTransformer.php'
       description: ''
       type: object
       x-examples:
@@ -3797,6 +3909,8 @@ components:
         is_default:
           type: boolean
     egg-variable:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/EggVariableTransformer.php'
       description: An egg variable represents a single configuration value for an `Egg` model on the Panel.
       type: object
       x-examples:
@@ -3840,6 +3954,8 @@ components:
           type: string
           description: Validation rules that are applied to the field value.
     server:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ServerTransformer.php'
       description: ''
       type: object
       x-examples:
@@ -4138,6 +4254,8 @@ components:
                             $ref: '#/components/schemas/subuser'
                 - $ref: '#/components/schemas/null_resource'
     api-key:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ApiKeyTransformer.php'
       type: object
       x-examples:
         example-1:
@@ -4171,6 +4289,8 @@ components:
           type: string
           format: date-time
     server-database:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/DatabaseTransformer.php'
       type: object
       properties:
         id:
@@ -4252,6 +4372,8 @@ components:
       x-stoplight:
         id: 32fc0018c8117
     file-object:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/FileObjectTransformer.php'
       type: object
       x-examples:
         example-1:
@@ -4379,6 +4501,8 @@ components:
       description: A pagination model represents a paginated set of data returned by the API. This can be used to determine how many additional requests are needed to load in all of the data.
       title: Pagination
     backup:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/BackupTransformer.php'
       title: Backup
       x-stoplight:
         id: qjsiassol76mo
@@ -4444,6 +4568,8 @@ components:
           format: uri
       title: Signed URL
     activity-log:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ActivityLogTransformer.php'
       title: Activity Log
       type: object
       description: Represents a single activity log entry for a user or server action.
@@ -4514,6 +4640,8 @@ components:
           has_additional_metadata: false
           timestamp: '2022-07-24T20:52:08+00:00'
     schedule:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ScheduleTransformer.php'
       title: Schedule
       type: object
       description: Represents a scheduled task for a server.
@@ -4609,6 +4737,8 @@ components:
               object: list
               data: []
     task:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/TaskTransformer.php'
       title: Schedule Task
       type: object
       description: Represents a single task within a server schedule.
@@ -4655,6 +4785,8 @@ components:
           created_at: '2022-07-24T20:52:08+00:00'
           updated_at: '2022-07-24T20:52:08+00:00'
     user:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/UserTransformer.php'
       title: User
       type: object
       description: Represents a Panel user account.
@@ -4689,6 +4821,8 @@ components:
           2fa_enabled: false
           created_at: '2022-07-24T20:52:08+00:00'
     subuser:
+      x-pterodactyl-source:
+        transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/SubuserTransformer.php'
       title: Subuser
       type: object
       description: Represents a non-owner user who has been granted access to a server. The response is a combination of a user object and the subuser's permissions.
@@ -4731,6 +4865,8 @@ components:
             - 'websocket.connect'
             - 'control.console'
     null_resource:
+      x-pterodactyl-source:
+        serializer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Extensions/League/Fractal/Serializers/PterodactylSerializer.php'
       title: Null Resource
       type: object
       description: 'Returned by the serializer when an include method returns a NullResource. This occurs when the requested relationship is not available or the user lacks permission to view it.'
