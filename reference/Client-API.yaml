@@ -4080,27 +4080,27 @@ components:
                       attributes:
                         $ref: '#/components/schemas/allocation'
             variables:
-              type:
-                - object
-                - 'null'
-              description: 'The egg variables for this server. Always present, but null if the user lacks startup read permission.'
-              properties:
-                object:
-                  type: string
-                  enum:
-                    - list
-                data:
-                  type: array
-                  uniqueItems: true
-                  items:
-                    type: object
-                    properties:
-                      object:
-                        type: string
-                        enum:
-                          - egg_variable
-                      attributes:
-                        $ref: '#/components/schemas/egg-variable'
+              description: 'The egg variables for this server. Always present in the response, but returns a null_resource object if the user lacks startup read permission.'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - list
+                    data:
+                      type: array
+                      uniqueItems: true
+                      items:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                            enum:
+                              - egg_variable
+                          attributes:
+                            $ref: '#/components/schemas/egg-variable'
+                - $ref: '#/components/schemas/null_resource'
             egg:
               type: object
               description: The egg this server is using. Present when `include=egg` is requested.
@@ -4117,26 +4117,26 @@ components:
                     name:
                       type: string
             subusers:
-              type:
-                - object
-                - 'null'
-              description: 'The subusers on this server. Present when `include=subusers` is requested. Null if the user lacks user read permission.'
-              properties:
-                object:
-                  type: string
-                  enum:
-                    - list
-                data:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      object:
-                        type: string
-                        enum:
-                          - subuser
-                      attributes:
-                        $ref: '#/components/schemas/subuser'
+              description: 'The subusers on this server. Present when `include=subusers` is requested. Returns a null_resource object if the user lacks user read permission.'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - list
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                            enum:
+                              - subuser
+                          attributes:
+                            $ref: '#/components/schemas/subuser'
+                - $ref: '#/components/schemas/null_resource'
     api-key:
       type: object
       x-examples:
@@ -4191,24 +4191,26 @@ components:
         max_connections:
           type: integer
         relationships:
-          type: object
-          description: Relationships included when requested using the `include` parameter.
+          type:
+            - object
+            - 'null'
+          description: 'Only present when the `include` parameter is used. Absent from the response if no includes were requested.'
           properties:
             password:
-              type:
-                - object
-                - 'null'
-              description: 'The database password. Present when `include=password` is requested. Null if the user lacks database password view permission.'
-              properties:
-                object:
-                  type: string
-                  enum:
-                    - database_password
-                attributes:
-                  type: object
+              description: 'The database password. Present when `include=password` is requested. Returns a null_resource object if the user lacks database password view permission.'
+              oneOf:
+                - type: object
                   properties:
-                    password:
+                    object:
                       type: string
+                      enum:
+                        - database_password
+                    attributes:
+                      type: object
+                      properties:
+                        password:
+                          type: string
+                - $ref: '#/components/schemas/null_resource'
       x-examples:
         example-1:
           id: string
@@ -4483,21 +4485,23 @@ components:
           format: date-time
           description: The ISO 8601 timestamp when the activity occurred.
         relationships:
-          type: object
-          description: Relationships included when requested using the `include` parameter.
+          type:
+            - object
+            - 'null'
+          description: 'Only present when the `include` parameter is used. Absent from the response if no includes were requested.'
           properties:
             actor:
-              type:
-                - object
-                - 'null'
-              description: 'The user who performed the action. Present when `include=actor` is requested. Null if the actor is not a user account (e.g. system actions).'
-              properties:
-                object:
-                  type: string
-                  enum:
-                    - user
-                attributes:
-                  $ref: '#/components/schemas/user'
+              description: 'The user who performed the action. Present when `include=actor` is requested. Returns a null_resource object if the actor is not a user account (e.g. system actions).'
+              oneOf:
+                - type: object
+                  properties:
+                    object:
+                      type: string
+                      enum:
+                        - user
+                    attributes:
+                      $ref: '#/components/schemas/user'
+                - $ref: '#/components/schemas/null_resource'
       examples:
         - id: a1b2c3d4e5f6
           batch: null
@@ -4726,6 +4730,20 @@ components:
           permissions:
             - 'websocket.connect'
             - 'control.console'
+    null_resource:
+      title: Null Resource
+      type: object
+      description: 'Returned by the serializer when an include method returns a NullResource. This occurs when the requested relationship is not available or the user lacks permission to view it.'
+      properties:
+        object:
+          type: string
+          enum:
+            - null_resource
+        attributes:
+          type: 'null'
+      examples:
+        - object: null_resource
+          attributes: null
   securitySchemes:
     BearerAuth:
       type: http
