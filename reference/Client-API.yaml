@@ -4587,8 +4587,6 @@ components:
           description: The Gravatar URL for this user.
         2fa_enabled:
           type: boolean
-          # NOTE: This property name starts with a digit as it matches the actual API response from the Pterodactyl panel (UserTransformer).
-          # Some code generators may require special handling for this field name.
           description: Whether this user has two-factor authentication enabled.
         created_at:
           type: string
