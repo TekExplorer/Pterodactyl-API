@@ -244,7 +244,16 @@ paths:
           name: type
           description: Determines which servers to return. If not specified all servers you have access to as an owner or subuser are returned.
           style: form
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - egg
+              - subusers
+          description: 'Comma-delimited list of relationships to include. Allowed: `egg`, `subusers`.'
+          style: form
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
         - schema:
@@ -1197,7 +1206,14 @@ paths:
       operationId: get-account-activity
       description: Returns a paginated list of activity log entries for the authenticated user's account.
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - actor
+          description: 'Comma-delimited list of relationships to include. Allowed: `actor`.'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
         - name: filter[event]
@@ -1475,7 +1491,15 @@ paths:
       operationId: get-server-details
       description: Returns details about a specific server.
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - egg
+              - subusers
+          description: 'Comma-delimited list of relationships to include. Allowed: `egg`, `subusers`.'
       tags:
         - Server
     parameters:
@@ -1817,7 +1841,14 @@ paths:
       operationId: get-server-activity
       description: Returns a paginated list of activity log entries for the given server.
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - actor
+          description: 'Comma-delimited list of relationships to include. Allowed: `actor`.'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
         - name: filter[event]
@@ -1949,7 +1980,14 @@ paths:
                           max_connections: 0
       operationId: get-server-databases
       parameters:
-        - $ref: '#/components/parameters/include'
+        - name: include
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - password
+          description: 'Comma-delimited list of relationships to include. Allowed: `password`.'
       description: Returns all of the databases that exist for the server.
       tags:
         - Server Databases
@@ -4055,10 +4093,12 @@ components:
                         $ref: '#/components/schemas/egg-variable'
             egg:
               type: object
-              description: The egg this server is using. shows on include=egg
+              description: The egg this server is using. Present when `include=egg` is requested.
               properties:
                 object:
                   type: string
+                  enum:
+                    - egg
                 attributes:
                   type: object
                   properties:
@@ -4068,14 +4108,23 @@ components:
                       type: string
             subusers:
               type: object
-              description: TODO. The subusers on this server. Shows on include=subusers.
+              description: The subusers on this server. Present when `include=subusers` is requested.
               properties:
                 object:
                   type: string
+                  enum:
+                    - list
                 data:
                   type: array
                   items:
                     type: object
+                    properties:
+                      object:
+                        type: string
+                        enum:
+                          - subuser
+                      attributes:
+                        $ref: '#/components/schemas/subuser'
     api-key:
       type: object
       x-examples:
@@ -4131,12 +4180,16 @@ components:
           type: integer
         relationships:
           type: object
+          description: Relationships included when requested using the `include` parameter.
           properties:
             password:
               type: object
+              description: The database password. Present when `include=password` is requested.
               properties:
                 object:
                   type: string
+                  enum:
+                    - database_password
                 attributes:
                   type: object
                   properties:
@@ -4415,6 +4468,20 @@ components:
           type: string
           format: date-time
           description: The ISO 8601 timestamp when the activity occurred.
+        relationships:
+          type: object
+          description: Relationships included when requested using the `include` parameter.
+          properties:
+            actor:
+              type: object
+              description: The user who performed the action. Present when `include=actor` is requested.
+              properties:
+                object:
+                  type: string
+                  enum:
+                    - user
+                attributes:
+                  $ref: '#/components/schemas/user'
       examples:
         - id: a1b2c3d4e5f6
           batch: null
@@ -4567,6 +4634,40 @@ components:
           continue_on_failure: false
           created_at: '2022-07-24T20:52:08+00:00'
           updated_at: '2022-07-24T20:52:08+00:00'
+    user:
+      title: User
+      type: object
+      description: Represents a Panel user account.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the user.
+        username:
+          type: string
+          description: The username of the user.
+        email:
+          type: string
+          format: email
+          description: The email address of the user.
+        image:
+          type: string
+          format: uri
+          description: The Gravatar URL for this user.
+        2fa_enabled:
+          type: boolean
+          description: Whether this user has two-factor authentication enabled.
+        created_at:
+          type: string
+          format: date-time
+          description: When the user account was created.
+      examples:
+        - uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+          username: janedoe
+          email: jane@example.com
+          image: 'https://gravatar.com/avatar/abc123'
+          2fa_enabled: false
+          created_at: '2022-07-24T20:52:08+00:00'
     subuser:
       title: Subuser
       type: object
