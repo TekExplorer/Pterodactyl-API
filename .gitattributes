@@ -1,0 +1,2 @@
+# Preserve Windows-style CRLF line endings for the OpenAPI spec (matches upstream Stoplight editor output)
+reference/*.yaml text eol=crlf
