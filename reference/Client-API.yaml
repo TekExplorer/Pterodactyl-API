@@ -274,7 +274,7 @@ paths:
     parameters: []
   /permissions:
     get:
-      summary: List Available Permissions
+      summary: List Permissions
       responses:
         '200':
           description: OK
@@ -619,7 +619,7 @@ paths:
         '405':
           $ref: '#/components/responses/405'
       operationId: get-permissions
-      description: Returns all of the permissions available on the Panel instance.
+      description: Returns all of the permissions on the Panel instance.
       x-internal: false
   /account:
     get:
@@ -984,7 +984,7 @@ paths:
                           last_used_at: '2022-03-01T01:41:51-05:00'
                           created_at: '2022-03-12T15:22:23-05:00'
       operationId: get-account-api-keys
-      description: Returns a list of all active API keys for an account
+      description: Returns a list of all active API keys for an account.
       tags:
         - Account
     parameters: []
@@ -1069,7 +1069,7 @@ paths:
     get:
       summary: Get SSH Keys
       operationId: get-account-ssh-keys
-      description: Returns a list of your ssh keys
+      description: Returns a list of your ssh keys.
       responses:
         '200':
           description: OK
@@ -1656,7 +1656,7 @@ paths:
                         network_tx_bytes: 0
                         uptime: 0
       operationId: get-servers-identifier-resources
-      description: 'Returns the current resource usage for the specified server. This endpoint utilizes a caching mechanism, updates can take up to 10 seconds to reflect. For real-time statistics, you should connect to the server''s websocket to recieve stats pushed in real time.'
+      description: 'Returns the current resource usage for the specified server. This endpoint utilizes a caching mechanism, updates can take up to 20 seconds to reflect. For real-time statistics, you should connect to the server''s websocket and listen to the "stats" event.'
       tags:
         - Server
   '/servers/{server}/command':
@@ -2019,9 +2019,12 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 191
+                description:
+                  type: string
               required:
                 - name
-      description: Renames a server in the Panel.
+        description: ''
+      description: Renames a server and (optionally) its description.
   '/servers/{server}/settings/reinstall':
     parameters:
       - $ref: '#/components/parameters/server'
@@ -2157,7 +2160,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
@@ -2187,7 +2190,7 @@ paths:
                       url:
                         type: string
       operationId: server-download-backup
-      description: Returns an endpoint to download a backup.
+      description: 'Returns a signed download URL for the backup. The URL can be requested directly to get a download response with the backup contents. This can either be a Wings download URL or an S3 storage URL depending on the storage driver being used. Wings download URLs are valid for 15 minutes, whereas S3 storage URLs are valid for 5 minutes.'
   '/servers/{server}/backups/{backup}/lock':
     parameters:
       - name: server
@@ -2196,7 +2199,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
@@ -2213,7 +2216,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/backup'
-      description: Toggles the `is_locked` status of a backup.
+      description: Toggles the locked state of a backup.
       tags:
         - Server Backups
   '/servers/{server}/backups/{backup}/restore':
@@ -2224,13 +2227,13 @@ paths:
         schema:
           type: string
           format: uuid
-        description: The server UUID.
+        description: The server identifier or UUID.
       - schema:
           type: string
         name: backup
         in: path
         required: true
-        description: The UUID of the backup being requested.
+        description: The UUID of the backup to restore.
     post:
       summary: Restore Backup
       operationId: server-restore-backup
@@ -2239,9 +2242,20 @@ paths:
           description: No Content
         '400':
           description: 'A `400: Bad Request` response is returned if the backup is not currently completed (or has failed), or when a server is currently installing, transferring, or restoring from a different backup.'
-      description: Restores a backup for a server. This will overwrite any existing files while running.
+      description: 'Restores a backup for a server. If specified, the existing files in the server will be truncated (or purged) before the backup is restored.'
       tags:
         - Server Backups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                truncate:
+                  type: boolean
+                  description: Whether the existing files should be truncated.
+              required:
+                - truncate
   '/servers/{server}/files/list':
     parameters:
       - $ref: '#/components/parameters/server'
@@ -2416,7 +2430,7 @@ paths:
           in: query
           name: directory
           description: The target directory to get files from
-      description: List all files in a given directory for a given server
+      description: 'Returns a list of file objects for a given directory. You do NOT need to include "/home/container" in the directory query parameter. If no directory is specified, the root directory (`/home/container`) is used.'
   '/servers/{server}/files/contents':
     parameters:
       - name: server
@@ -2443,7 +2457,7 @@ paths:
       operationId: get-server-file-contents
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Get the raw contents of a file
+      description: Get the raw contents of a file.
   '/servers/{server}/files/download':
     parameters:
       - name: server
@@ -2483,7 +2497,7 @@ paths:
       operationId: get-server-file-download
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Get a signed download link to the file
+      description: Returns a signed download URL for a file. This URL can be requested directly to get a download response with the file contents. This URL is only valid for 15 minutes.
   '/servers/{server}/files/rename':
     parameters:
       - name: server
@@ -2498,12 +2512,12 @@ paths:
       tags:
         - Server Files
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: get-server-rename-files
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Rename one or more files
+      description: Renames one or more files.
       requestBody:
         content:
           application/json:
@@ -2551,12 +2565,12 @@ paths:
       tags:
         - Server Files
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: post-server-copy-file
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Copy a file
+      description: Creates a copy of a file at the given location.
       requestBody:
         content:
           application/json:
@@ -2587,12 +2601,12 @@ paths:
       tags:
         - Server Files
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: post-server-write-file
       parameters:
         - $ref: '#/components/parameters/file'
-      description: Write a file
+      description: 'Writes the request body contents directly into a file. If the file path does not exist, the file will be created instead.'
       requestBody:
         content:
           text/plain:
@@ -2612,13 +2626,14 @@ paths:
         name: server
         in: path
         required: true
+        description: The server identifier or UUID.
     post:
       summary: Pull Remote File
       operationId: post-servers-server-files-pull
       responses:
-        '200':
-          description: OK
-      description: Download a file from an external URL
+        '204':
+          description: No Content
+      description: Downloads a file from an external source into the server. The source must be an absolute URL – redirects will not be followed.
       requestBody:
         content:
           application/json:
@@ -2658,12 +2673,13 @@ paths:
         name: server
         in: path
         required: true
+        description: The server identifier or UUID.
     post:
       summary: Change File Permissions
       operationId: post-servers-server-files-chmod
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       description: Updates file permissions for file(s) in the given root directory.
       tags:
         - Server Files
