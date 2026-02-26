@@ -1191,6 +1191,83 @@ paths:
       tags:
         - Account
       description: Adds an SSH key to the user's account.
+  /account/activity:
+    get:
+      summary: Get Account Activity Logs
+      operationId: get-account-activity
+      description: Returns a paginated list of activity log entries for the authenticated user's account.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - name: filter[event]
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter activity logs by event name (partial match).
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - timestamp
+              - '-timestamp'
+          description: Sort order for results.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - activity_log
+                        attributes:
+                          $ref: '#/components/schemas/activity-log'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/pagination'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: activity_log
+                        attributes:
+                          id: a1b2c3d4e5f6
+                          batch: null
+                          event: 'user:api-key.create'
+                          is_api: false
+                          ip: '127.0.0.1'
+                          description: null
+                          properties: {}
+                          has_additional_metadata: false
+                          timestamp: '2022-07-24T20:52:08+00:00'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 25
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+      tags:
+        - Account
   /account/ssh-keys/remove:
     parameters: []
     post:
@@ -1731,6 +1808,86 @@ paths:
                 - signal
       tags:
         - Server
+  '/servers/{server}/activity':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get Server Activity Logs
+      operationId: get-server-activity
+      description: Returns a paginated list of activity log entries for the given server.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - name: filter[event]
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter activity logs by event name (partial match).
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - timestamp
+              - '-timestamp'
+          description: Sort order for results.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - activity_log
+                        attributes:
+                          $ref: '#/components/schemas/activity-log'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/pagination'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: activity_log
+                        attributes:
+                          id: a1b2c3d4e5f6
+                          batch: null
+                          event: 'server:file.write'
+                          is_api: false
+                          ip: '127.0.0.1'
+                          description: null
+                          properties:
+                            file: '/config.yml'
+                          has_additional_metadata: false
+                          timestamp: '2022-07-24T20:52:08+00:00'
+                    meta:
+                      pagination:
+                        total: 1
+                        count: 1
+                        per_page: 25
+                        current_page: 1
+                        total_pages: 1
+                        links: {}
+      tags:
+        - Server Activity
   '/servers/{server}/databases':
     parameters:
       - $ref: '#/components/parameters/server'
@@ -2705,6 +2862,860 @@ paths:
                     - file: blank.png
                       mode: 777
         description: Contains information about the root directory and files to update permission of.
+  '/servers/{server}/files/compress':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Compress Files
+      operationId: post-servers-server-files-compress
+      description: Compresses one or more files or directories in the given root directory into a single archive file.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to compress files from. Defaults to '/'.
+                files:
+                  type: array
+                  description: An array of file/directory names to compress.
+                  items:
+                    type: string
+              required:
+                - files
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  files:
+                    - server.jar
+                    - world/
+        description: Contains information about the root directory and files to compress.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - file_object
+                  attributes:
+                    $ref: '#/components/schemas/file-object'
+              examples:
+                example:
+                  value:
+                    object: file_object
+                    attributes:
+                      name: archive-2022-07-24T205208.tar.gz
+                      mode: '-rw-r--r--'
+                      mode_bits: '644'
+                      size: 1048576
+                      is_file: true
+                      is_symlink: false
+                      mimetype: application/x-tar
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      modified_at: '2022-07-24T20:52:08+00:00'
+  '/servers/{server}/files/decompress':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Decompress File
+      operationId: post-servers-server-files-decompress
+      description: Decompresses a given archive file in the specified root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to decompress into. Defaults to '/'.
+                file:
+                  type: string
+                  description: The name of the archive file to decompress.
+              required:
+                - file
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  file: archive-2022-07-24T205208.tar.gz
+        description: Contains information about the root directory and file to decompress.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/delete':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Delete Files
+      operationId: post-servers-server-files-delete
+      description: Deletes one or more files or directories in the given root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory. Uses '/' if no directory is provided.
+                files:
+                  type: array
+                  description: An array of file/directory names to delete.
+                  items:
+                    type: string
+              required:
+                - files
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  files:
+                    - old-world/
+                    - debug.log
+        description: Contains information about the root directory and files to delete.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/create-folder':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    post:
+      summary: Create Folder
+      operationId: post-servers-server-files-create-folder
+      description: Creates a new directory on the server in the given root directory.
+      tags:
+        - Server Files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                root:
+                  type: string
+                  description: The root directory to create the new folder inside. Defaults to '/'.
+                name:
+                  type: string
+                  description: The name of the new folder.
+              required:
+                - name
+            examples:
+              Example 1:
+                value:
+                  root: /
+                  name: plugins
+        description: Contains information about where to create the folder.
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/files/upload':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: Get File Upload URL
+      operationId: get-servers-server-files-upload
+      description: Returns a signed URL that can be used to upload files to the server via the Wings daemon. The URL expires after 15 minutes.
+      tags:
+        - Server Files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - signed_url
+                  attributes:
+                    $ref: '#/components/schemas/signed-url'
+              examples:
+                example:
+                  value:
+                    object: signed_url
+                    attributes:
+                      url: 'https://wings.example.com:443/upload/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
+  '/servers/{server}/schedules':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Schedules
+      operationId: get-servers-server-schedules
+      description: Returns all of the schedules belonging to the given server.
+      tags:
+        - Server Schedules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - schedule
+                        attributes:
+                          $ref: '#/components/schemas/schedule'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: schedule
+                        attributes:
+                          id: 1
+                          name: Restart Server
+                          cron:
+                            day_of_week: '*'
+                            day_of_month: '*'
+                            month: '*'
+                            hour: '0'
+                            minute: '0'
+                          is_active: true
+                          is_processing: false
+                          only_when_online: false
+                          last_run_at: null
+                          next_run_at: '2022-07-25T00:00:00+00:00'
+                          created_at: '2022-07-24T20:52:08+00:00'
+                          updated_at: '2022-07-24T20:52:08+00:00'
+                          relationships:
+                            tasks:
+                              object: list
+                              data: []
+    post:
+      summary: Create Server Schedule
+      operationId: post-servers-server-schedules
+      description: Creates a new schedule for the server.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of this schedule.
+                minute:
+                  type: string
+                  description: Cron expression for the minute.
+                hour:
+                  type: string
+                  description: Cron expression for the hour.
+                day_of_month:
+                  type: string
+                  description: Cron expression for the day of month.
+                month:
+                  type: string
+                  description: Cron expression for the month.
+                day_of_week:
+                  type: string
+                  description: Cron expression for the day of week.
+                is_active:
+                  type: boolean
+                  description: Whether this schedule is currently active.
+                only_when_online:
+                  type: boolean
+                  description: If true, the schedule will only run when the server is online.
+              required:
+                - name
+                - minute
+                - hour
+                - day_of_month
+                - month
+                - day_of_week
+            examples:
+              Example 1:
+                value:
+                  name: Restart Server
+                  minute: '0'
+                  hour: '0'
+                  day_of_month: '*'
+                  month: '*'
+                  day_of_week: '*'
+                  is_active: true
+                  only_when_online: false
+        description: Schedule configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+  '/servers/{server}/schedules/{schedule}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    get:
+      summary: Get Server Schedule
+      operationId: get-servers-server-schedules-schedule
+      description: Returns the given schedule for the server along with its tasks.
+      tags:
+        - Server Schedules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+    post:
+      summary: Update Server Schedule
+      operationId: post-servers-server-schedules-schedule
+      description: Updates the given schedule for the server.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of this schedule.
+                minute:
+                  type: string
+                  description: Cron expression for the minute.
+                hour:
+                  type: string
+                  description: Cron expression for the hour.
+                day_of_month:
+                  type: string
+                  description: Cron expression for the day of month.
+                month:
+                  type: string
+                  description: Cron expression for the month.
+                day_of_week:
+                  type: string
+                  description: Cron expression for the day of week.
+                is_active:
+                  type: boolean
+                  description: Whether this schedule is currently active.
+                only_when_online:
+                  type: boolean
+                  description: If true, the schedule will only run when the server is online.
+              required:
+                - name
+                - minute
+                - hour
+                - day_of_month
+                - month
+                - day_of_week
+        description: Schedule configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule
+                  attributes:
+                    $ref: '#/components/schemas/schedule'
+    delete:
+      summary: Delete Server Schedule
+      operationId: delete-servers-server-schedules-schedule
+      description: Deletes the given schedule and all of its associated tasks.
+      tags:
+        - Server Schedules
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/schedules/{schedule}/execute':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    post:
+      summary: Execute Schedule
+      operationId: post-servers-server-schedules-schedule-execute
+      description: Executes the given schedule immediately, regardless of its active state.
+      tags:
+        - Server Schedules
+      responses:
+        '202':
+          description: Accepted
+  '/servers/{server}/schedules/{schedule}/tasks':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+    post:
+      summary: Create Schedule Task
+      operationId: post-servers-server-schedules-schedule-tasks
+      description: Creates a new task for the given schedule.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: The action to perform.
+                  enum:
+                    - command
+                    - power
+                    - backup
+                payload:
+                  type: string
+                  description: The payload for the action (e.g. the command string, or a power action like 'restart').
+                time_offset:
+                  type: integer
+                  description: How many seconds to wait after the previous task completes before running this task.
+                  minimum: 0
+                continue_on_failure:
+                  type: boolean
+                  description: If true, the schedule will continue running subsequent tasks even if this task fails.
+                sequence_id:
+                  type: integer
+                  description: The sequence position for this task. If omitted, the task is appended.
+                  minimum: 1
+              required:
+                - action
+                - time_offset
+            examples:
+              Example 1:
+                value:
+                  action: command
+                  payload: 'say Server restarting in 10 seconds!'
+                  time_offset: 0
+                  continue_on_failure: false
+        description: Task configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule_task
+                  attributes:
+                    $ref: '#/components/schemas/task'
+  '/servers/{server}/schedules/{schedule}/tasks/{task}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/schedule'
+      - $ref: '#/components/parameters/task'
+    post:
+      summary: Update Schedule Task
+      operationId: post-servers-server-schedules-schedule-tasks-task
+      description: Updates the given task for a schedule.
+      tags:
+        - Server Schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: The action to perform.
+                  enum:
+                    - command
+                    - power
+                    - backup
+                payload:
+                  type: string
+                  description: The payload for the action.
+                time_offset:
+                  type: integer
+                  description: How many seconds to wait after the previous task completes before running this task.
+                  minimum: 0
+                continue_on_failure:
+                  type: boolean
+                  description: If true, the schedule will continue running subsequent tasks even if this task fails.
+                sequence_id:
+                  type: integer
+                  description: The new sequence position for this task.
+                  minimum: 1
+              required:
+                - action
+                - time_offset
+        description: Task configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - schedule_task
+                  attributes:
+                    $ref: '#/components/schemas/task'
+    delete:
+      summary: Delete Schedule Task
+      operationId: delete-servers-server-schedules-schedule-tasks-task
+      description: Deletes the given task from a schedule.
+      tags:
+        - Server Schedules
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/network/allocations':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Allocations
+      operationId: get-servers-server-network-allocations
+      description: Returns all of the allocations assigned to the given server, including the primary allocation.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - allocation
+                        attributes:
+                          $ref: '#/components/schemas/allocation'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: allocation
+                        attributes:
+                          id: 1
+                          ip: '0.0.0.0'
+                          ip_alias: null
+                          port: 25565
+                          notes: null
+                          is_default: true
+    post:
+      summary: Assign New Allocation
+      operationId: post-servers-server-network-allocations
+      description: Automatically assigns a new allocation from the node's available pool to the server. Requires the server to have an allocation limit set.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+  '/servers/{server}/network/allocations/{allocation}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/allocation'
+    post:
+      summary: Update Allocation Notes
+      operationId: post-servers-server-network-allocations-allocation
+      description: Updates the notes for the given allocation.
+      tags:
+        - Server Network
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type:
+                    - string
+                    - 'null'
+                  description: Notes for this allocation. Set to null to clear.
+            examples:
+              Example 1:
+                value:
+                  notes: 'Game server port'
+        description: Allocation notes.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+    delete:
+      summary: Delete Allocation
+      operationId: delete-servers-server-network-allocations-allocation
+      description: Deletes the given allocation from the server. Cannot delete the primary allocation. Requires the server to have an allocation limit set.
+      tags:
+        - Server Network
+      responses:
+        '204':
+          description: No Content
+  '/servers/{server}/network/allocations/{allocation}/primary':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/allocation'
+    post:
+      summary: Set Primary Allocation
+      operationId: post-servers-server-network-allocations-allocation-primary
+      description: Sets the given allocation as the primary allocation for the server.
+      tags:
+        - Server Network
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - allocation
+                  attributes:
+                    $ref: '#/components/schemas/allocation'
+  '/servers/{server}/users':
+    parameters:
+      - $ref: '#/components/parameters/server'
+    get:
+      summary: List Server Subusers
+      operationId: get-servers-server-users
+      description: Returns all of the subusers (non-owner users) for the given server.
+      tags:
+        - Server Subusers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                          enum:
+                            - subuser
+                        attributes:
+                          $ref: '#/components/schemas/subuser'
+              examples:
+                example:
+                  value:
+                    object: list
+                    data:
+                      - object: subuser
+                        attributes:
+                          uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+                          username: janedoe
+                          email: jane@example.com
+                          image: 'https://gravatar.com/avatar/abc123'
+                          2fa_enabled: false
+                          created_at: '2022-07-24T20:52:08+00:00'
+                          permissions:
+                            - 'websocket.connect'
+                            - 'control.console'
+    post:
+      summary: Create Server Subuser
+      operationId: post-servers-server-users
+      description: Creates a new subuser for the server. If the user does not exist a new account will be created.
+      tags:
+        - Server Subusers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user to add as a subuser.
+                permissions:
+                  type: array
+                  description: An array of permission strings to assign to the subuser.
+                  items:
+                    type: string
+              required:
+                - email
+                - permissions
+            examples:
+              Example 1:
+                value:
+                  email: jane@example.com
+                  permissions:
+                    - 'websocket.connect'
+                    - 'control.console'
+        description: Subuser configuration.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+  '/servers/{server}/users/{user}':
+    parameters:
+      - $ref: '#/components/parameters/server'
+      - $ref: '#/components/parameters/user'
+    get:
+      summary: Get Server Subuser
+      operationId: get-servers-server-users-user
+      description: Returns a single subuser for the given server.
+      tags:
+        - Server Subusers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+    post:
+      summary: Update Server Subuser
+      operationId: post-servers-server-users-user
+      description: Updates the permissions for the given subuser on the server.
+      tags:
+        - Server Subusers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  description: An array of permission strings to assign to the subuser.
+                  items:
+                    type: string
+              required:
+                - permissions
+            examples:
+              Example 1:
+                value:
+                  permissions:
+                    - 'websocket.connect'
+                    - 'control.console'
+                    - 'control.start'
+        description: Updated subuser permissions.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                      - subuser
+                  attributes:
+                    $ref: '#/components/schemas/subuser'
+    delete:
+      summary: Delete Server Subuser
+      operationId: delete-servers-server-users-user
+      description: Removes the given subuser from the server.
+      tags:
+        - Server Subusers
+      responses:
+        '204':
+          description: No Content
 components:
   schemas:
     allocation:
@@ -3361,6 +4372,243 @@ components:
           type: string
           format: uri
       title: Signed URL
+    activity-log:
+      title: Activity Log
+      type: object
+      description: Represents a single activity log entry for a user or server action.
+      properties:
+        id:
+          type: string
+          description: A SHA1 hash used as a unique identifier for this log entry on the front-end.
+        batch:
+          type:
+            - string
+            - 'null'
+          description: A UUID that groups related activity log entries together.
+          format: uuid
+        event:
+          type: string
+          description: The event name describing what action was performed.
+          example: 'server:file.write'
+        is_api:
+          type: boolean
+          description: Whether the action was performed via an API key (rather than a browser session).
+        ip:
+          type:
+            - string
+            - 'null'
+          description: The IP address of the actor. May be hidden for privacy.
+        description:
+          type:
+            - string
+            - 'null'
+          description: An optional description for the log entry.
+        properties:
+          type: object
+          description: Key-value pairs describing additional metadata about the event.
+        has_additional_metadata:
+          type: boolean
+          description: Whether there are additional metadata properties not exposed in the event description string.
+        timestamp:
+          type: string
+          format: date-time
+          description: The ISO 8601 timestamp when the activity occurred.
+      examples:
+        - id: a1b2c3d4e5f6
+          batch: null
+          event: 'server:file.write'
+          is_api: false
+          ip: '127.0.0.1'
+          description: null
+          properties:
+            file: '/config.yml'
+          has_additional_metadata: false
+          timestamp: '2022-07-24T20:52:08+00:00'
+    schedule:
+      title: Schedule
+      type: object
+      description: Represents a scheduled task for a server.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for this schedule.
+        name:
+          type: string
+          description: The name of the schedule.
+        cron:
+          type: object
+          description: The cron expression values for the schedule.
+          properties:
+            day_of_week:
+              type: string
+            day_of_month:
+              type: string
+            month:
+              type: string
+            hour:
+              type: string
+            minute:
+              type: string
+        is_active:
+          type: boolean
+          description: Whether this schedule is currently active and will run at the specified time.
+        is_processing:
+          type: boolean
+          description: Whether this schedule is currently being processed.
+        only_when_online:
+          type: boolean
+          description: If true, this schedule only runs when the server is in an online state.
+        last_run_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The timestamp when this schedule last ran. Null if it has never run.
+        next_run_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The timestamp when this schedule will next run.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        relationships:
+          type: object
+          description: Related resources for this schedule.
+          properties:
+            tasks:
+              type: object
+              description: The tasks associated with this schedule.
+              properties:
+                object:
+                  type: string
+                  enum:
+                    - list
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                        enum:
+                          - schedule_task
+                      attributes:
+                        $ref: '#/components/schemas/task'
+      examples:
+        - id: 1
+          name: Restart Server
+          cron:
+            day_of_week: '*'
+            day_of_month: '*'
+            month: '*'
+            hour: '0'
+            minute: '0'
+          is_active: true
+          is_processing: false
+          only_when_online: false
+          last_run_at: null
+          next_run_at: '2022-07-25T00:00:00+00:00'
+          created_at: '2022-07-24T20:52:08+00:00'
+          updated_at: '2022-07-24T20:52:08+00:00'
+          relationships:
+            tasks:
+              object: list
+              data: []
+    task:
+      title: Schedule Task
+      type: object
+      description: Represents a single task within a server schedule.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for this task.
+        sequence_id:
+          type: integer
+          description: The order in which this task runs within the schedule.
+        action:
+          type: string
+          description: The action this task will perform.
+          enum:
+            - command
+            - power
+            - backup
+        payload:
+          type: string
+          description: The payload for the action (e.g. the command string, power action, or empty for backup).
+        time_offset:
+          type: integer
+          description: How many seconds to wait after the previous task completes before running this task.
+        is_queued:
+          type: boolean
+          description: Whether this task is currently queued for execution.
+        continue_on_failure:
+          type: boolean
+          description: If true, subsequent tasks will continue even if this task fails.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      examples:
+        - id: 1
+          sequence_id: 1
+          action: command
+          payload: 'say Server restarting in 10 seconds!'
+          time_offset: 0
+          is_queued: false
+          continue_on_failure: false
+          created_at: '2022-07-24T20:52:08+00:00'
+          updated_at: '2022-07-24T20:52:08+00:00'
+    subuser:
+      title: Subuser
+      type: object
+      description: Represents a non-owner user who has been granted access to a server. The response is a combination of a user object and the subuser's permissions.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The UUID of the user.
+        username:
+          type: string
+          description: The username of the user.
+        email:
+          type: string
+          format: email
+          description: The email address of the user.
+        image:
+          type: string
+          format: uri
+          description: The Gravatar URL for this user.
+        2fa_enabled:
+          type: boolean
+          # NOTE: This property name starts with a digit as it matches the actual API response from the Pterodactyl panel (UserTransformer).
+          # Some code generators may require special handling for this field name.
+          description: Whether this user has two-factor authentication enabled.
+        created_at:
+          type: string
+          format: date-time
+          description: When the user account was created.
+        permissions:
+          type: array
+          description: An array of permission strings assigned to this subuser for this server.
+          items:
+            type: string
+      examples:
+        - uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+          username: janedoe
+          email: jane@example.com
+          image: 'https://gravatar.com/avatar/abc123'
+          2fa_enabled: false
+          created_at: '2022-07-24T20:52:08+00:00'
+          permissions:
+            - 'websocket.connect'
+            - 'control.console'
   securitySchemes:
     BearerAuth:
       type: http
@@ -3619,6 +4867,43 @@ components:
       schema:
         type: string
       description: the target file
+    backup:
+      name: backup
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The backup UUID.
+    schedule:
+      name: schedule
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the schedule.
+    task:
+      name: task
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the schedule task.
+    allocation:
+      name: allocation
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the allocation.
+    user:
+      name: user
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The UUID of the subuser.
   requestBodies: {}
 security:
   - BearerAuth: []
@@ -3627,9 +4912,17 @@ tags:
     description: Account Routes
   - name: Server
     description: Server Routes
+  - name: Server Activity
+    description: Server Activity Log Routes
   - name: Server Backups
     description: Server Backups Routes
   - name: Server Databases
     description: Server Databases Routes
   - name: Server Files
     description: Server Files Routes
+  - name: Server Schedules
+    description: Server Schedules Routes
+  - name: Server Network
+    description: Server Network Allocation Routes
+  - name: Server Subusers
+    description: Server Subuser Management Routes
