@@ -4058,14 +4058,16 @@ components:
           type: boolean
         relationships:
           type: object
-          description: Relationships are generally only included when requested using the `include` parameter on a request.
+          description: '`allocations` and `variables` are always present in the response (default includes). `egg` and `subusers` are only present when explicitly requested using the `include` parameter.'
           properties:
             allocations:
               type: object
-              description: The allocations assigned to this server
+              description: The allocations assigned to this server. Always present in the response.
               properties:
                 object:
                   type: string
+                  enum:
+                    - list
                 data:
                   type: array
                   items:
@@ -4073,14 +4075,20 @@ components:
                     properties:
                       object:
                         type: string
+                        enum:
+                          - allocation
                       attributes:
                         $ref: '#/components/schemas/allocation'
             variables:
-              type: object
-              description: The egg variables for this server
+              type:
+                - object
+                - 'null'
+              description: 'The egg variables for this server. Always present, but null if the user lacks startup read permission.'
               properties:
                 object:
                   type: string
+                  enum:
+                    - list
                 data:
                   type: array
                   uniqueItems: true
@@ -4089,6 +4097,8 @@ components:
                     properties:
                       object:
                         type: string
+                        enum:
+                          - egg_variable
                       attributes:
                         $ref: '#/components/schemas/egg-variable'
             egg:
@@ -4107,8 +4117,10 @@ components:
                     name:
                       type: string
             subusers:
-              type: object
-              description: The subusers on this server. Present when `include=subusers` is requested.
+              type:
+                - object
+                - 'null'
+              description: 'The subusers on this server. Present when `include=subusers` is requested. Null if the user lacks user read permission.'
               properties:
                 object:
                   type: string
@@ -4183,8 +4195,10 @@ components:
           description: Relationships included when requested using the `include` parameter.
           properties:
             password:
-              type: object
-              description: The database password. Present when `include=password` is requested.
+              type:
+                - object
+                - 'null'
+              description: 'The database password. Present when `include=password` is requested. Null if the user lacks database password view permission.'
               properties:
                 object:
                   type: string
@@ -4473,8 +4487,10 @@ components:
           description: Relationships included when requested using the `include` parameter.
           properties:
             actor:
-              type: object
-              description: The user who performed the action. Present when `include=actor` is requested.
+              type:
+                - object
+                - 'null'
+              description: 'The user who performed the action. Present when `include=actor` is requested. Null if the actor is not a user account (e.g. system actions).'
               properties:
                 object:
                   type: string
@@ -4547,11 +4563,11 @@ components:
           format: date-time
         relationships:
           type: object
-          description: Related resources for this schedule.
+          description: '`tasks` is always present in the response (default include).'
           properties:
             tasks:
               type: object
-              description: The tasks associated with this schedule.
+              description: The tasks associated with this schedule. Always present in the response.
               properties:
                 object:
                   type: string
