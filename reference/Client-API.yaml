@@ -1079,6 +1079,10 @@ paths:
                   description: The fingerprint of the SSH key to be removed.
               required:
                 - fingerprint
+            examples:
+              example-1:
+                value:
+                  fingerprint: SHA256:cHl0ZXJvZGFjdHlsaXNjb29s
       tags:
         - Account
   '/servers/{server}':
@@ -1758,6 +1762,25 @@ paths:
                         type: object
                         minProperties: 0
                         description: An object containing all docker images that can be used for this server's egg.
+              examples:
+                example-1:
+                  value:
+                    object: list
+                    data:
+                      - object: egg_variable
+                        attributes:
+                          name: Minecraft Version
+                          description: 'The version of minecraft to download.'
+                          env_variable: MINECRAFT_VERSION
+                          default_value: latest
+                          server_value: 1.8.8
+                          is_editable: true
+                          rules: 'nullable|string|max:20'
+                    meta:
+                      startup_command: 'java -Xms128M -Xmx256M -jar bungeecord.jar'
+                      raw_startup_command: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'
+                      docker_images:
+                        'ghcr.io/pterodactyl/yolks:java_17': 'Java 17'
       operationId: get-servers-server-startup
       description: Returns the startup command and variables for a server.
   '/servers/{server}/startup/variable':
@@ -1790,6 +1813,21 @@ paths:
                         type: string
                       raw_startup_command:
                         type: string
+              examples:
+                example-1:
+                  value:
+                    object: egg_variable
+                    attributes:
+                      name: Minecraft Version
+                      description: 'The version of minecraft to download.'
+                      env_variable: MINECRAFT_VERSION
+                      default_value: latest
+                      server_value: '1.19.4'
+                      is_editable: true
+                      rules: 'nullable|string|max:20'
+                    meta:
+                      startup_command: 'java -Xms128M -Xmx1024M -jar minecraft.jar'
+                      raw_startup_command: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'
       operationId: put-servers-server-startup-variable
       description: Updates an egg variable for a server.
       requestBody:
@@ -1813,6 +1851,11 @@ paths:
               required:
                 - key
                 - value
+            examples:
+              example-1:
+                value:
+                  key: MINECRAFT_VERSION
+                  value: '1.19.4'
   '/servers/{server}/settings/rename':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SettingsController.php'
@@ -1840,6 +1883,11 @@ paths:
                   type: string
               required:
                 - name
+            examples:
+              example-1:
+                value:
+                  name: 'My Awesome Server'
+                  description: 'A cool Minecraft server'
         description: ''
       description: Renames a server and (optionally) its description.
   '/servers/{server}/settings/reinstall':
@@ -1887,6 +1935,10 @@ paths:
                   description: 'Must be one of the docker images returned by the API call to `/servers/{server}/startup`. A validation error will be returned if it is invalid.'
               required:
                 - docker_image
+            examples:
+              example-1:
+                value:
+                  docker_image: 'ghcr.io/pterodactyl/yolks:java_17'
   '/servers/{server}/backups':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
@@ -1911,6 +1963,23 @@ paths:
                         properties:
                           backup_count:
                             type: number
+              examples:
+                example-1:
+                  value:
+                    object: backup
+                    attributes:
+                      uuid: 793d57b3-ebcd-43f0-874d-3728e91d0927
+                      name: Hodor 123
+                      ignored_files:
+                        - world/
+                      checksum: 'sha1:129ecd218e050e7abd83e9875da2b4a546d72d1d'
+                      bytes: 17740732
+                      created_at: '2022-05-29T16:12:21-04:00'
+                      completed_at: '2022-05-29T16:12:24-04:00'
+                      is_locked: true
+                      is_successful: true
+                    meta:
+                      backup_count: 1
       operationId: get-servers-server-backups
       description: Returns all of the backups that exist for a server.
     post:
@@ -1924,6 +1993,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/backup'
+              examples:
+                example-1:
+                  value:
+                    object: backup
+                    attributes:
+                      uuid: 793d57b3-ebcd-43f0-874d-3728e91d0927
+                      name: My Backup
+                      ignored_files:
+                        - node_modules/
+                        - .git/
+                      checksum: null
+                      bytes: 0
+                      created_at: '2022-05-29T16:12:21-04:00'
+                      completed_at: null
+                      is_locked: false
+                      is_successful: false
       operationId: post-servers-server-backups
       description: 'Creates a new backup for a server. Backups are performed in the background and will not be complete when this endpoint returns a successful value. You must connect to the server websocket and listen for a completion event, or poll the server backup listing endpoint to see when it is completed.'
       requestBody:
@@ -1944,6 +2029,14 @@ paths:
                   description: An array of files and folders to ignore when performing the backup.
                   items:
                     type: string
+            examples:
+              example-1:
+                value:
+                  name: 'My Backup'
+                  is_locked: false
+                  ignored:
+                    - node_modules/
+                    - .git/
   '/servers/{server}/backups/{backup}':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/BackupController.php'
@@ -1966,6 +2059,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/backup'
+              examples:
+                example-1:
+                  value:
+                    object: backup
+                    attributes:
+                      uuid: 793d57b3-ebcd-43f0-874d-3728e91d0927
+                      name: Hodor 123
+                      ignored_files:
+                        - world/
+                      checksum: 'sha1:129ecd218e050e7abd83e9875da2b4a546d72d1d'
+                      bytes: 17740732
+                      created_at: '2022-05-29T16:12:21-04:00'
+                      completed_at: '2022-05-29T16:12:24-04:00'
+                      is_locked: true
+                      is_successful: true
       operationId: get-servers-server-backups-backup
       description: Returns a single backup for a server.
     delete:
@@ -2016,6 +2124,12 @@ paths:
                     properties:
                       url:
                         type: string
+              examples:
+                example-1:
+                  value:
+                    object: signed_url
+                    attributes:
+                      url: 'https://wings.example.com:443/download/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
       operationId: server-download-backup
       description: 'Returns a signed download URL for the backup. The URL can be requested directly to get a download response with the backup contents. This can either be a Wings download URL or an S3 storage URL depending on the storage driver being used. Wings download URLs are valid for 15 minutes, whereas S3 storage URLs are valid for 5 minutes.'
   '/servers/{server}/backups/{backup}/lock':
@@ -2045,6 +2159,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/backup'
+              examples:
+                example-1:
+                  value:
+                    object: backup
+                    attributes:
+                      uuid: 793d57b3-ebcd-43f0-874d-3728e91d0927
+                      name: Hodor 123
+                      ignored_files:
+                        - world/
+                      checksum: 'sha1:129ecd218e050e7abd83e9875da2b4a546d72d1d'
+                      bytes: 17740732
+                      created_at: '2022-05-29T16:12:21-04:00'
+                      completed_at: '2022-05-29T16:12:24-04:00'
+                      is_locked: true
+                      is_successful: true
       description: Toggles the locked state of a backup.
       tags:
         - Server Backups
@@ -2087,6 +2216,10 @@ paths:
                   description: Whether the existing files should be truncated.
               required:
                 - truncate
+            examples:
+              example-1:
+                value:
+                  truncate: false
   '/servers/{server}/files/list':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/FileController.php'
@@ -2755,6 +2888,30 @@ paths:
                       - schedule
                   attributes:
                     $ref: '#/components/schemas/schedule'
+              examples:
+                example-1:
+                  value:
+                    object: schedule
+                    attributes:
+                      id: 1
+                      name: Restart Server
+                      cron:
+                        day_of_week: '*'
+                        day_of_month: '*'
+                        month: '*'
+                        hour: '0'
+                        minute: '0'
+                      is_active: true
+                      is_processing: false
+                      only_when_online: false
+                      last_run_at: null
+                      next_run_at: '2022-07-25T00:00:00+00:00'
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      updated_at: '2022-07-24T20:52:08+00:00'
+                      relationships:
+                        tasks:
+                          object: list
+                          data: []
   '/servers/{server}/schedules/{schedule}':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleController.php'
@@ -2781,6 +2938,30 @@ paths:
                       - schedule
                   attributes:
                     $ref: '#/components/schemas/schedule'
+              examples:
+                example-1:
+                  value:
+                    object: schedule
+                    attributes:
+                      id: 1
+                      name: Restart Server
+                      cron:
+                        day_of_week: '*'
+                        day_of_month: '*'
+                        month: '*'
+                        hour: '0'
+                        minute: '0'
+                      is_active: true
+                      is_processing: false
+                      only_when_online: false
+                      last_run_at: null
+                      next_run_at: '2022-07-25T00:00:00+00:00'
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      updated_at: '2022-07-24T20:52:08+00:00'
+                      relationships:
+                        tasks:
+                          object: list
+                          data: []
     post:
       summary: Update Server Schedule
       operationId: post-servers-server-schedules-schedule
@@ -2824,6 +3005,17 @@ paths:
                 - day_of_month
                 - month
                 - day_of_week
+            examples:
+              example-1:
+                value:
+                  name: Restart Server
+                  minute: '0'
+                  hour: '0'
+                  day_of_month: '*'
+                  month: '*'
+                  day_of_week: '*'
+                  is_active: true
+                  only_when_online: false
         description: Schedule configuration.
       responses:
         '200':
@@ -2839,6 +3031,30 @@ paths:
                       - schedule
                   attributes:
                     $ref: '#/components/schemas/schedule'
+              examples:
+                example-1:
+                  value:
+                    object: schedule
+                    attributes:
+                      id: 1
+                      name: Restart Server
+                      cron:
+                        day_of_week: '*'
+                        day_of_month: '*'
+                        month: '*'
+                        hour: '0'
+                        minute: '0'
+                      is_active: true
+                      is_processing: false
+                      only_when_online: false
+                      last_run_at: null
+                      next_run_at: '2022-07-25T00:00:00+00:00'
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      updated_at: '2022-07-24T20:52:08+00:00'
+                      relationships:
+                        tasks:
+                          object: list
+                          data: []
     delete:
       summary: Delete Server Schedule
       operationId: delete-servers-server-schedules-schedule
@@ -2927,6 +3143,20 @@ paths:
                       - schedule_task
                   attributes:
                     $ref: '#/components/schemas/task'
+              examples:
+                example-1:
+                  value:
+                    object: schedule_task
+                    attributes:
+                      id: 1
+                      sequence_id: 1
+                      action: command
+                      payload: 'say Server restarting in 10 seconds!'
+                      time_offset: 0
+                      is_queued: false
+                      continue_on_failure: false
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      updated_at: '2022-07-24T20:52:08+00:00'
   '/servers/{server}/schedules/{schedule}/tasks/{task}':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/ScheduleTaskController.php'
@@ -2970,6 +3200,13 @@ paths:
               required:
                 - action
                 - time_offset
+            examples:
+              example-1:
+                value:
+                  action: command
+                  payload: 'say Server restarting in 10 seconds!'
+                  time_offset: 0
+                  continue_on_failure: false
         description: Task configuration.
       responses:
         '200':
@@ -2985,6 +3222,20 @@ paths:
                       - schedule_task
                   attributes:
                     $ref: '#/components/schemas/task'
+              examples:
+                example-1:
+                  value:
+                    object: schedule_task
+                    attributes:
+                      id: 1
+                      sequence_id: 1
+                      action: command
+                      payload: 'say Server restarting in 10 seconds!'
+                      time_offset: 0
+                      is_queued: false
+                      continue_on_failure: false
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      updated_at: '2022-07-24T20:52:08+00:00'
     delete:
       summary: Delete Schedule Task
       operationId: delete-servers-server-schedules-schedule-tasks-task
@@ -3061,6 +3312,17 @@ paths:
                       - allocation
                   attributes:
                     $ref: '#/components/schemas/allocation'
+              examples:
+                example-1:
+                  value:
+                    object: allocation
+                    attributes:
+                      id: 43
+                      ip: '192.168.1.50'
+                      ip_alias: null
+                      port: 25567
+                      notes: null
+                      is_default: false
   '/servers/{server}/network/allocations/{allocation}':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/NetworkAllocationController.php'
@@ -3103,6 +3365,17 @@ paths:
                       - allocation
                   attributes:
                     $ref: '#/components/schemas/allocation'
+              examples:
+                example-1:
+                  value:
+                    object: allocation
+                    attributes:
+                      id: 43
+                      ip: '192.168.1.50'
+                      ip_alias: null
+                      port: 25567
+                      notes: 'Game server port'
+                      is_default: false
     delete:
       summary: Delete Allocation
       operationId: delete-servers-server-network-allocations-allocation
@@ -3138,6 +3411,17 @@ paths:
                       - allocation
                   attributes:
                     $ref: '#/components/schemas/allocation'
+              examples:
+                example-1:
+                  value:
+                    object: allocation
+                    attributes:
+                      id: 43
+                      ip: '192.168.1.50'
+                      ip_alias: null
+                      port: 25567
+                      notes: null
+                      is_default: true
   '/servers/{server}/users':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
@@ -3234,6 +3518,20 @@ paths:
                       - subuser
                   attributes:
                     $ref: '#/components/schemas/subuser'
+              examples:
+                example-1:
+                  value:
+                    object: subuser
+                    attributes:
+                      uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+                      username: janedoe
+                      email: jane@example.com
+                      image: 'https://gravatar.com/avatar/abc123'
+                      2fa_enabled: false
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      permissions:
+                        - 'websocket.connect'
+                        - 'control.console'
   '/servers/{server}/users/{user}':
     x-pterodactyl-source:
       controller: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Http/Controllers/Api/Client/Servers/SubuserController.php'
@@ -3260,6 +3558,20 @@ paths:
                       - subuser
                   attributes:
                     $ref: '#/components/schemas/subuser'
+              examples:
+                example-1:
+                  value:
+                    object: subuser
+                    attributes:
+                      uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+                      username: janedoe
+                      email: jane@example.com
+                      image: 'https://gravatar.com/avatar/abc123'
+                      2fa_enabled: false
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      permissions:
+                        - 'websocket.connect'
+                        - 'control.console'
     post:
       summary: Update Server Subuser
       operationId: post-servers-server-users-user
@@ -3301,6 +3613,21 @@ paths:
                       - subuser
                   attributes:
                     $ref: '#/components/schemas/subuser'
+              examples:
+                example-1:
+                  value:
+                    object: subuser
+                    attributes:
+                      uuid: '1234abcd-5678-efgh-ijkl-mnopqrstuvwx'
+                      username: janedoe
+                      email: jane@example.com
+                      image: 'https://gravatar.com/avatar/abc123'
+                      2fa_enabled: false
+                      created_at: '2022-07-24T20:52:08+00:00'
+                      permissions:
+                        - 'websocket.connect'
+                        - 'control.console'
+                        - 'control.start'
     delete:
       summary: Delete Server Subuser
       operationId: delete-servers-server-users-user
