@@ -74,7 +74,7 @@
       function applySelection() {
         const selected = select.options[select.selectedIndex];
         if (!selected) return;
-        elementsApi.setAttribute('apiDescriptionUrl', selected.dataset.yamlUrl);
+        elementsApi.apiDescriptionUrl = selected.dataset.yamlUrl;
         if (selected.dataset.prUrl) {
           prLink.href = selected.dataset.prUrl;
           prLink.style.display = '';
@@ -132,3 +132,4 @@
 
   </body>
 </html>
+
