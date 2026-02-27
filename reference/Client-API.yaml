@@ -4131,6 +4131,13 @@ components:
           type: object
       description: A pagination model represents a paginated set of data returned by the API. This can be used to determine how many additional requests are needed to load in all of the data.
       title: Pagination
+      examples:
+        - total: 1
+          count: 1
+          per_page: 50
+          current_page: 1
+          total_pages: 1
+          links: {}
     backup:
       x-pterodactyl-source:
         transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/BackupTransformer.php'
@@ -4195,6 +4202,8 @@ components:
           type: string
           format: uri
       title: Signed URL
+      examples:
+        - url: 'https://wings.example.com:443/download/file?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
     activity-log:
       x-pterodactyl-source:
         transformer: 'https://github.com/pterodactyl/panel/blob/v1.12.1/app/Transformers/Api/Client/ActivityLogTransformer.php'
