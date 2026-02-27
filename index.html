@@ -7,15 +7,128 @@
     <!-- Embed elements Elements via Web Component -->
     <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <style>
+      #branch-selector {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        background: white;
+        padding: 6px 10px;
+        border-radius: 4px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        font-family: sans-serif;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #pr-link {
+        white-space: nowrap;
+      }
+    </style>
   </head>
   <body>
 
+    <div id="branch-selector">
+      <label for="branch-select">Branch:</label>
+      <select id="branch-select"></select>
+      <a id="pr-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">↗ View PR</a>
+    </div>
+
     <elements-api
-      apiDescriptionUrl="https://raw.githubusercontent.com/TekExplorer/Pterodactyl-API/master/reference/Client-API.yaml"
+      id="elements-api"
       router="hash"
-      layout="sidebar"
+      layout="responsive"
       hideTryIt="false"
     />
+
+    <script>
+      const REPO = 'TekExplorer/Pterodactyl-API';
+      const GH_API = 'https://api.github.com/repos/' + REPO;
+      const RAW_BASE = 'https://raw.githubusercontent.com/';
+      const YAML_PATH = '/reference/Client-API.yaml';
+      const DEFAULT_BRANCH = 'master';
+
+      const select = document.getElementById('branch-select');
+      const elementsApi = document.getElementById('elements-api');
+      const prLink = document.getElementById('pr-link');
+
+      function apiFetch(url) {
+        return fetch(url).then(function(res) {
+          if (!res.ok) throw new Error('GitHub API returned ' + res.status);
+          return res.json();
+        });
+      }
+
+      function addOption(group, label, yamlUrl, prUrl) {
+        const opt = document.createElement('option');
+        opt.textContent = label;
+        opt.dataset.yamlUrl = yamlUrl;
+        opt.dataset.prUrl = prUrl || '';
+        if (label === DEFAULT_BRANCH) opt.selected = true;
+        group.appendChild(opt);
+        return opt;
+      }
+
+      function applySelection() {
+        const selected = select.options[select.selectedIndex];
+        if (!selected) return;
+        elementsApi.setAttribute('apiDescriptionUrl', selected.dataset.yamlUrl);
+        if (selected.dataset.prUrl) {
+          prLink.href = selected.dataset.prUrl;
+          prLink.style.display = '';
+        } else {
+          prLink.style.display = 'none';
+        }
+      }
+
+      Promise.all([
+        apiFetch(GH_API + '/branches'),
+        apiFetch(GH_API + '/pulls?state=open&per_page=100')
+      ]).then(function(results) {
+        const branches = results[0];
+        const prs = results[1];
+
+        const branchNames = new Set(branches.map(function(b) { return b.name; }));
+
+        // Branches group
+        const branchGroup = document.createElement('optgroup');
+        branchGroup.label = 'Branches';
+        branches.forEach(function(b) {
+          addOption(branchGroup, b.name, RAW_BASE + REPO + '/' + b.name + YAML_PATH, '');
+        });
+        select.appendChild(branchGroup);
+
+        // Pull Requests group — only PRs whose head branch is not already a repo branch,
+        // or that come from a fork (skip PRs from deleted forks with no head repo)
+        const prOpts = prs.filter(function(pr) {
+          if (!pr.head.repo) return false;
+          return !(branchNames.has(pr.head.ref) && pr.head.repo.full_name === REPO);
+        });
+        if (prOpts.length > 0) {
+          const prGroup = document.createElement('optgroup');
+          prGroup.label = 'Pull Requests';
+          prOpts.forEach(function(pr) {
+            const yamlUrl = RAW_BASE + pr.head.repo.full_name + '/' + pr.head.ref + YAML_PATH;
+            addOption(prGroup, 'PR #' + pr.number + ': ' + pr.title, yamlUrl, pr.html_url);
+          });
+          select.appendChild(prGroup);
+        }
+
+        applySelection();
+      }).catch(function() {
+        // Fallback to default branch if API is unavailable
+        const opt = document.createElement('option');
+        opt.textContent = DEFAULT_BRANCH;
+        opt.dataset.yamlUrl = RAW_BASE + REPO + '/' + DEFAULT_BRANCH + YAML_PATH;
+        opt.dataset.prUrl = '';
+        select.appendChild(opt);
+        applySelection();
+      });
+
+      select.addEventListener('change', applySelection);
+    </script>
 
   </body>
 </html>
